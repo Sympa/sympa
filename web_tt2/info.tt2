@@ -1,0 +1,17 @@
+<!-- $Id: info.tt2 5675 2009-04-28 13:59:12Z david.verdin $ -->
+[% IF homepage_content %]
+     [% homepage_content %]
+[% ELSE %]
+
+<div class="block">
+
+<h2>[%|loc%]List informations[%END%]</h2>
+
+   <p>
+     [% info_content %]
+   </p>
+
+</div>
+[% END %]
+
+<!-- end info.tt2 -->

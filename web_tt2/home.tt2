@@ -1,0 +1,49 @@
+<!-- $Id: home.tt2 5703 2009-05-07 09:57:18Z david.verdin $ -->
+   <h1>[%|loc%]Mailing lists server[%END%]</h1>
+<p class="text_justify">
+[%|loc(conf.email,conf.host)%]This server provides you access to your mailing list environment. Starting from this web page, you can perform subscription options, unsubscription, archive, list moderation, list configuration.[%END%]
+</p>
+
+<h2>[%|loc%]Mailing lists categories[%END%]</h2>
+<br />
+
+<div id="home_container">
+
+ <div id="global_mailing_lists">
+ 
+      <ul class="mailing_lists_menu">
+    [% FOREACH topic = topics %]
+      [% IF topic.id == 'topicsless' %]
+       <li><a href="[% path_cgi %]/lists/[% topic.id %]"><strong>[%|loc%]Others[%END%]</strong></a></li>
+      [% ELSE %]
+       <li><a href="[% path_cgi %]/lists/[% topic.id %]"><strong>[% topic.current_title %]</strong></a></li>
+      [% END %]
+
+      [% IF topic.sub.size %]
+            <li class="no_style"><ul class="no_style">
+      [% FOREACH subtopic = topic.sub %]
+              <li class="smaller"><a href="[% path_cgi %]/lists/[% topic.id %]/[% subtopic.key %]">[% subtopic.value.current_title %]</a></li>
+      [% END %]
+      </ul></li>
+      [% END %]
+      [% IF topic.next %]
+       </ul>
+   
+   
+      <ul class="mailing_lists_menu">
+      [% END %]
+    [% END %]
+      </ul>
+
+  </div>
+<div id="home_search_list">
+ <form action="[% path_cgi %]" method="post"> 
+ <fieldset id="home_rss_news">
+    <input type="submit" name="action_rss_request" value="[%|loc%]RSS news[%END%]" />
+ </fieldset> 
+ </form>
+</div>
+
+</div>
+<br />
+<!-- end home.tt2 -->

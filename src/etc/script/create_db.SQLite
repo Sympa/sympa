@@ -1,0 +1,138 @@
+
+CREATE TABLE user_table (
+  	email_user          	text NOT NULL,
+  	gecos_user          	text,
+  	password_user		text,
+	last_login_date_user	integer,	
+	last_login_host_user	text,
+	cookie_delay_user	integer,
+	lang_user		text,
+	attributes_user		text,
+	data_user		text,
+	PRIMARY KEY (email_user)
+);
+
+CREATE TABLE subscriber_table (
+  	list_subscriber       	text NOT NULL,
+	user_subscriber		text NOT NULL,
+  	custom_attribute_subscriber text,
+	robot_subscriber	text NOT NULL,
+	date_subscriber		timestamp NOT NULL,
+	update_subscriber	timestamp,
+	visibility_subscriber	text,
+	reception_subscriber	text,
+	topics_subscriber	text,
+	bounce_subscriber	text,
+	bounce_address_subscriber text,
+	comment_subscriber	text,
+	subscribed_subscriber 	boolean,
+	included_subscriber 	boolean,
+	include_sources_subscriber text,
+	bounce_score_subscriber integer,
+	PRIMARY KEY (robot_subscriber, list_subscriber, user_subscriber)
+);
+CREATE INDEX subscriber_idx ON subscriber_table (user_subscriber,list_subscriber,robot_subscriber);
+
+CREATE TABLE admin_table (
+	list_admin 		text NOT NULL,
+ 	user_admin 		text NOT NULL,
+ 	robot_admin 		text NOT NULL,
+	role_admin 		text NOT NULL,
+	date_admin 		timestamp NOT NULL,
+	update_admin 		timestamp,
+	reception_admin 	text,
+	visibility_admin 	text,
+	comment_admin 		text,
+	subscribed_admin  	boolean,
+	included_admin  	boolean,
+	include_sources_admin  	text,
+	info_admin   		text,
+	profile_admin  		text,
+	PRIMARY KEY (robot_admin, list_admin, role_admin, user_admin)
+);
+CREATE	INDEX admin_idx ON admin_table(list_admin, user_admin, robot_admin, role_admin);
+
+CREATE TABLE netidmap_table (
+        netid_netidmap		text NOT NULL,
+	serviceid_netidmap	text NOT NULL,
+	robot_netidmap		text NOT NULL,
+        email_netidmap		text,
+        PRIMARY KEY (netid_netidmap, serviceid_netidmap, robot_netidmap)
+);
+CREATE	INDEX netidmap_idx ON netidmap_table(netid_netidmap, serviceid_netidmap, robot_netidmap);
+
+CREATE TABLE logs_table (
+	id_logs			integer NOT NULL,
+	date_logs		integer NOT NULL,
+	robot_logs		text,
+	list_logs		text,
+	action_logs		text NOT NULL,
+	parameters_logs		text,
+	target_email_logs	text,
+	user_email_logs		text,
+	msg_id_logs		text,
+	status_logs		text NOT NULL,
+	error_type_logs		text,
+	client_logs		text,
+	daemon_logs		text NOT NULL,
+	PRIMARY KEY (id_logs)					  
+);
+CREATE	INDEX logs_idx ON logs_table(id_logs);
+
+CREATE TABLE session_table (
+	id_session		text NOT NULL,
+	start_date_session	integer NOT NULL,
+	date_session		integer NOT NULL,
+	remote_addr_session	text,
+	robot_session		text,
+	email_session		text,
+	hit_session		integer,
+	data_session		text,
+	PRIMARY KEY (id_session)
+);
+CREATE INDEX session_idx ON session_table(id_session);
+
+CREATE TABLE one_time_ticket_table (
+	ticket_one_time_ticket	text NOT NULL,
+	robot_one_time_ticket	text,
+	email_one_time_ticket	text,
+	date_one_time_ticket	integer,
+	data_one_time_ticket	text,
+	remote_addr_one_time_ticket text,
+	status_one_time_ticket	text,
+	PRIMARY KEY (ticket_one_time_ticket)
+);
+CREATE	INDEX one_time_ticket_idx ON one_time_ticket_table(ticket_one_time_ticket);
+
+CREATE TABLE bulkmailer_table (
+	messagekey_bulkmailer	text NOT NULL,
+	packetid_bulkmailer	text NOT NULL,
+	receipients_bulkmailer	text NOT NULL,
+	returnpath_bulkmailer	text NOT NULL,
+	robot_bulkmailer	text NOT NULL,
+	listname_bulkmailer	text DEFAULT NULL,
+	verp_bulkmailer		integer NOT NULL,
+	priority_message_bulkmailer integer NOT NULL,
+	priority_packet_bulkmailer integer NOT NULL,
+	reception_date_bulkmailer integer NOT NULL,
+	delivery_date_bulkmailer integer NOT NULL,
+	lock_bulkmailer		text,
+	PRIMARY KEY (messagekey_bulkmailer,packetid_bulkmailer)
+);
+CREATE INDEX bulkmailer_idx ON bulkmailer_table(messagekey_bulkmailer,packetid_bulkmailer);
+
+CREATE TABLE bulkspool_table (
+	messagekey_bulkspool	text NOT NULL,
+	message_bulkspool	text NOT NULL,
+	lock_bulkspool		integer NOT NULL,
+	PRIMARY KEY (messagekey_bulkspool)
+);
+CREATE INDEX bulkspool_idx ON bulkspool_table(messagekey_bulkspool);
+
+CREATE TABLE conf_table (
+	robot_conf		text DEFAULT NULL,
+	label_conf		text DEFAULT NULL,
+	value_conf		text DEFAULT NULL,
+	PRIMARY KEY (robot_conf,label_conf)
+);
+CREATE INDEX conf_idx ON conf_table(robot_conf,label_conf);

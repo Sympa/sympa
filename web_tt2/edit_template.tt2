@@ -1,0 +1,44 @@
+<!-- $Id: edit_template.tt2 6098 2009-08-13 08:26:28Z olivier.salaun $ -->
+
+<h2>[%|loc%]Template edition system[%END%]</h2><br />
+<p>
+<ul>
+<li>[%|loc%]Template name:[%END%]  <strong> [% template_name %] </strong></li>
+<li>[%|loc%]Type:[%END%] <strong> [% webormail %] </strong></li>
+<li>[%|loc%]Path:[%END%] <strong> [% template_path %] </strong></li>
+<li>[%|loc%]Scope:[%END%] <strong> [% scope %] </strong>.[% IF scope == 'list' %]
+  ( [%|loc(list,robot)%]This template is defined for list %1@%2[%END%] )
+[% ELSE %]
+  [% IF scope == 'robot' %]
+     ( [%|loc(robot)%]This template is default for all lists of robot %1 unless it is redefined for some particular list[%END%] )
+  [% ELSE %]
+     ( [%|loc%]This template is default for all robots unless  it is redefined for some particular robot[%END%] )
+  [% END %]
+[% END %]
+</li>
+<li>[%|loc%]language: [%END%]<strong> [% tpl_lang %] </strong>.[% IF subdir == 'default' %][%|loc%](This template is the default for all languages unless it is redefined for a specific language.)[%END%][% END %]
+</ul>
+</p><br />
+<form action="[% path_cgi %]/edit_template" method="post">
+<fieldset>
+ <textarea wrap="off" name="content" cols="90" rows="[% rows %]" />
+[% template_content %]
+</textarea><br /><br />
+<input type="hidden" name="webormail" value="[% webormail %]" />
+<input type="hidden" name="template_name" value="[% template_name %]" />
+<input type="hidden" name="action" value="edit_template" />
+<input type="hidden" name="template_path" value="[% template_path %]" />
+<input type="hidden" name="tpl_lang" value="[% tpl_lang %]" />
+[% IF list %]
+	<input type="hidden" name="list" value="[% list %]" /> 
+[% END %] 
+
+<input type="hidden" name="scope" value="[% scope %]" /> 	
+<input type="submit" class="MainMenuLinks" name="action_edit_template" value="[%|loc%]save[%END%]" />
+
+[% IF saved %]
+[%|loc%]Template saved[%END%] ([% time %]) <br /><br />
+[% END %]
+</fieldset>
+</form>
+<!-- end edit_template.tt2 -->

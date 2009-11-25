@@ -1,0 +1,72 @@
+<!-- $Id: suboptions.tt2 6098 2009-08-13 08:26:28Z olivier.salaun $ -->
+<div class="block">
+
+<h2>[%|loc%]Your list options[%END%]</h2>
+<br />
+  <form action="[% path_cgi %]" method="post">
+  <fieldset>
+   <label for="gecos">[%|loc%]Name:[%END%]</label> <input type="text" name="gecos" id="gecos" value="[% subscriber.gecos %]" size="25" /> <br /><br />
+[% PROCESS edit_attributes.tt2 %]
+  [%|loc%]You are subscribed since[%END%] [% subscriber.date %]  <br /><br />
+  [%|loc%]Last update:[%END%] [% subscriber.update_date %]  <br /><br />
+     <input type="hidden" name="list" value="[% list %]" />
+     [%|loc%]Receiving mode:[%END%] 
+     <select name="reception">
+        [% FOREACH r = reception %]
+          <option value="[% r.key %]" [% r.value.selected %]>[% r.value.description %]</option>
+        [% END %]
+     </select>
+
+      <a class="actionMenuLinks" href="[% path_cgi %]/nomenu/help/user_options" title="[%|loc%]Open in a new window[%END%]" onclick="window.open('','wws_help','toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,copyhistory=no,width=400,height=200')" target="wws_help">
+     [%|loc%]Help[%END%]</a>
+ 
+     <br /><br />
+     [%IF available_topics %]	
+      [%|loc%]Topic subscription:[%END%]		
+        [%IF possible_topic %] 
+ 	 <BLOCKQUOTE>	
+ 	  [% FOREACH t = available_topics %]
+ 	    [%IF topic_checked.${t.name} %]	
+             <input type="checkbox" name="topic_[%t.name%]" value="1" checked="1"> [% t.title %] </input>
+ 	    [%ELSE%]
+ 	     <input type="checkbox" name="topic_[%t.name%]" value="1"> [% t.title %] </input>
+ 	    [%END%] 	
+ 	     <br />
+ 	  [% END %]
+ 	  [%IF topic_checked.other %]
+ 	   <input type="checkbox" name="topic_other" value="1"  checked="1"/> [%|loc%]Other (messages not tagged) [%END%]
+          [%ELSE%]	
+           <input type="checkbox" name="topic_other" value="1" /> [%|loc%]Other (messages not tagged) [%END%] 	
+ 	  [%END%] 
+ 	  <br />
+          </BLOCKQUOTE>
+  
+ 	  [%IF sub_user_topic %]
+	   <br />	
+ 	   <input type="checkbox" name="no_topic" value="1"> [%|loc%]Disable topics subscription[%END%]</input>
+ 	   <br />
+ 	  [%END%]
+       	
+        [%ELSE%]
+ 	 <BLOCKQUOTE><i>[%|loc%]Only possible in "normal" receiving mode[%END%]</i></BLOCKQUOTE>
+        [%END%]
+      [%END%]	
+ 	 
+     <br />
+     [%|loc%]Visibility:[%END%]
+     <select name="visibility">
+        [% FOREACH r = visibility %]
+          <option value="[% r.key %]" [% r.value.selected %]>[% r.value.description %]</option>
+        [% END %]
+     </select>
+
+
+     <br/>  <br/>
+     <input class="MainMenuLinks" type="submit" name="action_set" value="[%|loc%]Update[%END%]" />
+</fieldset>     
+</form><br /><br /> 
+
+[% PROCESS picture_upload.tt2 %]
+
+</div>
+<!-- end suboptions.tt2 -->

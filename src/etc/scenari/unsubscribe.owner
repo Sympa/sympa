@@ -1,0 +1,5 @@
+title.gettext owners approval
+
+!equal ([sender],[email])           smtp             -> request_auth([email])
+is_subscriber([listname],[sender])   smtp,smime,md5  -> owner
+true()                               smtp,smime,md5  -> do_it

@@ -1,0 +1,51 @@
+<!-- $Id: latest_d_read.tt2 5198 2008-11-03 16:06:31Z david.verdin $ -->
+
+<h2>
+ [% IF count %]
+   [%|loc(count)%] The %1 most recent shared documents [%END%] 
+ [% ELSE %]
+   [%|loc%] Most recent shared documents [%END%] 
+ [% END %]
+
+ [% IF for %]
+   [%|loc(for)%] for %1 days [%END%] 	
+ [% END %]
+</h2> 	
+<br /> 
+ 
+<table class="table_style" summary="[%|loc%]Most recent documents for this list [%END%] ">
+ <tr class="color_light">
+   <th><strong>[%|loc%]Last update[%END%]</strong></th>
+   <th><strong>[%|loc%]Name[%END%]</strong></th>
+   <th><strong>[%|loc%]Author[%END%]</strong></th>
+   <th><strong>[%|loc%]Directory[%END%]</strong></th>
+ </tr>
+
+ [% FOREACH d = documents %]
+ <tr>
+   <td> [% d.last_update %] </td>
+   <td>
+    [% IF d.html %]
+      <a href="[% path_cgi %]/d_read/[% list %][% d.escaped_content_dir %]/[% d.escaped_name %]" title="[%|loc%]Open in a new window[%END%]" target="html_window">
+      <img src="[% d.icon %]" alt="[% d.escaped_title %]" /> [% d.name %] </a>
+    [% ELSIF d.url %]
+      <a href="[% d.url %]" title="[%|loc%]Open in a new window[%END%]" target="html_window">
+      <img src="[% d.icon %]" alt="[% d.escaped_title %]" /> [% d.anchor %] </a>
+    [% ELSE %]
+      <a href="[% path_cgi %]/d_read/[% list %][% d.escaped_content_dir %]/[% d.escaped_name %]">
+	  <img src="[% d.icon %]" alt="[% d.escaped_title %]" /> [% d.name %] </a>
+    [% END %] 
+
+   <td> [% IF d.author %] 
+           [% d.author %] 
+	[% ELSE %]
+	   [%|loc%]Unknown[%END%] 
+	[% END %] 
+   </td>
+   <td> <a href="[% path_cgi %]/d_read/[% list %][% d.escaped_content_dir %]"/> [% d.content_dir %] </td>
+ </tr>
+ 
+ [% END %]  
+
+</table>
+<!-- end latest_d_read.tt2 -->

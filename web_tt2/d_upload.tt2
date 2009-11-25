@@ -1,0 +1,26 @@
+<!-- $Id: d_upload.tt2 6098 2009-08-13 08:26:28Z olivier.salaun $ -->
+[%|loc(shortname)%]the file %1 already exists[%END%]
+
+<form action="[% path_cgi %]" method="post">
+<fieldset>
+  <label for="mode_delete">[%|loc(shortname)%]Do you want to delete the old file %1?[%END%]</label>
+    <input id="mode_delete" class="MainMenuLinks" type="submit" name="mode_delete" value="[%|loc%]Delete[%END%]" />
+  <br />
+  <label for="new_name">[%|loc(shortname)%]Do you want to rename your file %1?[%END%]</label>
+    <br />
+    <input id="new_name" size="20" maxlength="100" name="new_name" />
+    <input id="new_name" class="MainMenuLinks" type="submit" name="mode_rename" value="[%|loc%]Rename[%END%]" />
+    
+  <br />
+  <label for="mode_cancel">[%|loc%]Do you want to cancel the upload?[%END%]</label>
+    <input id="mode_cancel" class="MainMenuLinks" type="submit" name="mode_cancel" value="[%|loc%]Cancel[%END%]" />
+
+   <input type="hidden" name="action_d_upload" value="1" />
+   <input type="hidden" name="serial" value="[% serial_file %]" />
+   <input type="hidden" name="path" value="[% path %]" />
+   <input type="hidden" name="list" value="[% list %]" />
+   <input type="hidden" name="shortname" value="[% shortname %]" />
+</fieldset>
+</form>
+
+<!-- end d_upload.tt2 -->

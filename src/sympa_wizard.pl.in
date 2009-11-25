@@ -1,0 +1,671 @@
+#!--PERL--
+
+# Sympa - SYsteme de Multi-Postage Automatique
+# Copyright (c) 1997, 1998, 1999, 2000, 2001 Comite Reseau des Universites
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+=head1 NAME
+
+sympa_wizard.pl - help perform sympa initial setup
+
+=head1 SYNOPSIS
+
+=over
+
+=item sympa_wizard.pl
+
+Edit current sympa configuration
+
+=item sympa_wizard.pl [--target file] --create <sympa.conf|wwsympa.conf>
+
+Creates a new sympa or wwsympa configuration file
+
+=item sympa_wizard.pl --check
+
+check CPAN modules needed for running sympa
+
+=item sympa_wizard.pl --help
+
+Display usage instructions
+
+=back
+
+=head1 AUTHORS
+
+=over
+
+=item Serge Aumont <sa@cru.fr>
+
+=item Olivier Salaün <os@cru.fr>
+
+=back
+
+=cut
+
+use lib '--modulesdir--';
+use strict;
+use POSIX qw(strftime);
+use English qw(-no_match_vars);
+use Getopt::Long;
+use Pod::Usage;
+use Sympa::Constants;
+
+## sympa configuration files
+my $wwsympa_conf = Sympa::Constants::WWSCONFIG;
+my $sympa_conf   = Sympa::Constants::CONFIG;
+
+my %options;
+GetOptions(
+    \%options, 
+    'target=s',
+    'create=s',
+    'check',
+    'help'
+);
+
+if ($options{help}) {
+    pod2usage();
+} elsif ($options{create}) {
+    create_configuration();
+} elsif ($options{check}) {
+    check_cpan();
+} else {
+    edit_configuration();
+}
+
+exit 0;
+
+sub create_configuration {
+    use confdef;
+
+    my $conf;
+    if ($options{create} eq 'sympa.conf') {
+        $conf = $options{target} ? $options{target} : $sympa_conf;
+    } elsif ($options{create} eq 'wwsympa.conf') {
+        $conf = $options{target} ? $options{target} : $wwsympa_conf;
+    } else {
+        pod2usage("$options{create} is not a valid argument");
+        exit 1;
+    }
+
+    if (-f $conf) {
+        print STDERR "$conf file already exists, exiting\n";
+        exit 1;
+    }
+
+    unless (open (NEWF,"> $conf")){
+        die "Unable to open $conf : $!";
+    };
+
+    if ($options{create} eq 'sympa.conf') {
+#        print NEWF <<EOF
+## Configuration file for Sympa
+## many parameters are optional
+## refer to the documentation for a detailed list of parameters
+
+#EOF
+    }
+
+    foreach my $param (@confdef::params) {
+
+        if ($param->{'title'}) {
+            printf NEWF "###\\\\\\\\ %s ////###\n\n", $param->{'title'};
+            next;
+        }
+
+        next unless ($param->{'file'} eq $options{create});
+
+        next unless (defined $param->{'default'} || defined $param->{'sample'});
+
+        printf NEWF "## %s\n", $param->{'query'}
+            if (defined $param->{'query'});
+
+        printf NEWF "## %s\n", $param->{'advice'}
+            if (defined $param->{'advice'});
+
+        printf NEWF "%s\t%s\n\n", $param->{'name'}, $param->{'default'}
+            if (defined $param->{'default'});
+
+        printf NEWF "#%s\t%s\n\n", $param->{'name'}, $param->{'sample'}
+            if (defined $param->{'sample'});
+    }
+
+    close NEWF;
+    print STDERR "$conf file has been created\n";
+}
+
+sub edit_configuration {
+    require Conf;
+
+    my $new_wwsympa_conf = '/tmp/wwsympa.conf';
+    my $new_sympa_conf = '/tmp/sympa.conf';
+    my $wwsconf = {};
+    my $somechange = 0;
+
+    ## Load config 
+    unless ($wwsconf = wwslib::load_config($wwsympa_conf)) {
+        die("Unable to load config file $wwsympa_conf");
+    }
+
+    ## Load sympa config (but not using database)
+    unless (Conf::load( $sympa_conf,'nodb')) {
+        die("Unable to load sympa config file $sympa_conf");
+    }
+
+    my (@new_wwsympa_conf, @new_sympa_conf);
+
+    ## Edition mode
+    foreach my $param (@confdef::params) {
+        my $desc;
+
+        if ($param->{'title'}) {
+            my $title = $param->{'title'};
+            printf "\n\n** $title **\n";
+
+            ## write to conf file
+            push @new_wwsympa_conf,
+                sprintf "###\\\\\\\\ %s ////###\n\n", $param->{'title'};
+            push @new_sympa_conf,
+                sprintf "###\\\\\\\\ %s ////###\n\n", $param->{'title'};
+
+            next;
+        }    
+
+        my $file = $param->{'file'} ;
+        my $name = $param->{'name'} ; 
+        my $query = $param->{'query'} ;
+        my $advice = $param->{'advice'} ;
+        my $sample = $param->{'sample'} ;
+        my $current_value ;
+        if ($file eq 'wwsympa.conf') {	
+            $current_value = $wwsconf->{$name} ;
+        } elsif ($file eq 'sympa.conf') {
+            $current_value = $Conf::Conf{$name}; 
+        } else {
+            next;
+        }
+        my $new_value;
+        if ($param->{'edit'} eq '1') {
+            printf "... $advice\n" unless ($advice eq '') ;
+            printf "$name: $query \[$current_value\] : ";
+            $new_value = <STDIN> ;
+            chomp $new_value;
+        }
+        if ($new_value eq '') {
+            $new_value = $current_value;
+        }
+
+        ## SKip empty parameters
+        next if (($new_value eq '') &&
+            ! $sample);
+
+        ## param is an ARRAY
+        if (ref($new_value) eq 'ARRAY') {
+            $new_value = join ',',@{$new_value};
+        }
+
+        if ($file eq 'wwsympa.conf') {
+            $desc = \@new_wwsympa_conf;
+        }elsif ($file eq 'sympa.conf') {
+            $desc = \@new_sympa_conf;
+        }else{
+            printf STDERR "incorrect parameter $name definition \n";
+        }
+
+        if ($new_value eq '') {
+            next unless $sample;
+
+            push @{$desc}, sprintf "## $query\n";
+
+            unless ($advice eq '') {
+                push @{$desc}, sprintf "## $advice\n";
+            }
+
+            push @{$desc}, sprintf "# $name\t$sample\n\n";
+        }else {
+            push @{$desc}, sprintf "## $query\n";
+            unless ($advice eq '') {
+                push @{$desc}, sprintf "## $advice\n";
+            }
+
+            if ($current_value ne $new_value) {
+                push @{$desc}, sprintf "# was $name $current_value\n";
+                $somechange = 1;
+            }
+
+            push @{$desc}, sprintf "$name\t$new_value\n\n";
+        }
+    }
+
+    if ($somechange) {
+
+        my $date = strftime("%d.%b.%Y-%H.%M.%S", localtime(time));
+
+        ## Keep old config files
+        unless (rename $wwsympa_conf, $wwsympa_conf.'.'.$date) {
+            warn "Unable to rename $wwsympa_conf : $!";
+        }
+
+        unless (rename $sympa_conf, $sympa_conf.'.'.$date) {
+            warn "Unable to rename $sympa_conf : $!";
+        }
+
+        ## Write new config files
+        unless (open (WWSYMPA,"> $wwsympa_conf")){
+            die "unable to open $new_wwsympa_conf : $!";
+        };
+
+        unless (open (SYMPA,"> $sympa_conf")){
+            die "unable to open $new_sympa_conf : $!";
+        };
+
+        print SYMPA @new_sympa_conf;
+        print WWSYMPA @new_wwsympa_conf;
+
+        close SYMPA;
+        close WWSYMPA;
+
+        printf "$sympa_conf and $wwsympa_conf have been updated.\nPrevious versions have been saved as $sympa_conf.$date and $wwsympa_conf.$date\n";
+    }
+}
+
+sub check_cpan {
+    require CPAN;
+
+    ## assume required_version = 1.0 if not specified.
+    my %cpan_modules = (
+			'Archive::Zip' => {
+					   required_version => '1.05',
+					   package_name => 'Archive-Zip',
+					   mandatory => 1,
+					   usage => 'this module provides zip/unzip for archive and shared document download/upload',
+					  },
+			'AuthCAS' => {
+				      required_version =>'1.4',
+				      package_name => 'AuthCAS',
+				      usage => 'CAS Single Sign-On client libraries. Required if you configure Sympa to delegate web authentication to a CAS server.',
+				     },
+			'CGI' => {
+				  required_version =>'3.35',
+				  package_name => 'CGI',
+				  mandatory => 1,
+				  usage => 'required to run Sympa web interface',
+				  },
+			'Crypt::CipherSaber' => {
+						 required_version =>'0.50',
+						 package_name => 'CipherSaber',
+						 usage => 'this module provides reversible encryption of user passwords in the database.usefull only when updating from old version with password reversible encryption.',
+						},
+			'DB_File' => {
+				      required_version =>'1.75',
+				      package_name => 'DB_FILE',
+				      mandatory => 1,
+				      usage => ' used for maintaining snapshots of list members',
+				     },
+			'DBD::Oracle' => {
+					  required_version =>'0.90',
+					  package_name => 'DBD-Oracle',
+					  usage => 'Oracle database driver, required if you connect to a Oracle database.',
+				     },
+			'DBD::Pg' => {
+				      required_version =>'0.90',
+				      prerequisites => 'postgresql-devel and postgresql-server. postgresql should be running for make test to succeed',
+				      package_name => 'DBD-Pg',
+				      usage => 'PostgreSQL database driver, required if you connect to a PostgreSQL database.',
+				     },
+			'DBD::SQLite' => {
+					  required_version =>'0.90',
+					  prerequisites => 'sqlite-devel. No need to install a server, the SQLite server code being provided with the client code.',
+					  package_name => 'DBD-SQLite',
+					  usage => 'SQLite database driver, required if you connect to a SQLite database.',
+					 },
+			'DBD::Sybase' => {
+					  required_version =>'0.90',
+					  package_name => 'DBD-Sybase',
+					  usage => 'Sybase database driver, required if you connect to a Sybase database.',
+					 },
+			'DBD::mysql' => {
+					 required_version =>'2.0407',
+					 prerequisites => 'mysql-devel and myslq-server. mysql should be running for make test to succeed',
+					 package_name => 'Msql-Mysql-modules',
+					 mandatory => 1,
+					 usage => 'Mysql database driver, required if you connect to a Mysql database.\nYou first need to install the Mysql server and have it started before installing the Perl DBD module.',
+					},
+			'DBI' => {
+				  required_version =>'1.48',
+				  package_name => 'DBI',
+				  mandatory => 1,
+				  usage => 'a generic Database Driver, required by Sympa to access Subscriber information and User preferences. An additional Database Driver is required for each database type you wish to connect to.',
+				 },
+			'Digest::MD5' => {
+					  required_version =>'2.00',
+					  package_name => 'Digest-MD5',
+					  mandatory => 1,
+					  usage => 'used to compute MD5 digests for passwords, etc',
+					 },
+			'Encode' => {
+				     package_name => 'Encode',
+				     mandatory => 1,
+				     usage => 'module for character encoding processing',
+				    },
+			'FCGI' => {
+				   required_version =>'0.67',
+				   package_name => 'FCGI',
+				   mandatory => 1,
+				   usage => 'WWSympa, Sympa\'s web interface can run as a FastCGI (ie: a persistent CGI). If you install this module, you will also need to install the associated mod_fastcgi for Apache.',
+				  },
+			'File::Copy::Recursive' => {
+						    required_version =>'0.36',
+						    package_name => 'File-Copy-Recursive',
+						    mandatory => 1,
+						    usage => 'used to copy file hierarchies',
+						   },
+			'File::NFSLock' => {
+					    package_name => 'File-NFSLock',
+					    usage => 'required to perform NFS lock ; see also lock_method sympa.conf parameter'
+					   },
+			'HTML::FormatText' => {
+					       package_name => 'HTML-Format',
+					       mandatory => 1,
+					       usage => 'used to compute plaindigest messages from HTML',
+					      },
+			'HTML::StripScripts::Parser' => {
+							 required_version =>'1.0',
+							 package_name => 'HTML-StripScripts-Parser',
+							 mandatory => 1,
+							 usage => 'required for XSS protection on the web interface',
+							},
+			'HTML::TreeBuilder' => {
+						package_name => 'HTML-Tree',
+						mandatory => 1,
+						usage => 'used to compute plaindigest messages from HTML',
+					       },
+			'IO::Scalar' => {
+					 package_name => 'IO-stringy',
+					 mandatory => 1,
+					 usage => 'internal use for string processing',
+					},
+			'IO::Socket::SSL' => {
+					      required_version =>'0.90',
+					      package_name => 'IO-Socket-SSL',
+					      usage => 'required when including members of a remote list',
+					     },
+			'Locale::TextDomain' => {
+						 package_name => 'libintl-perl',
+						 mandatory => 1,
+						 usage => 'internationalization functions',
+						},
+			'LWP' => {
+				  package_name => 'libwww-per',
+				  mandatory => 1,
+				  usage => 'required when including members of a remote list',
+				 },
+			'MHonArc::UTF8' => {
+					    required_version =>'2.6.0',
+					    package_name => 'MHonArc',
+					    mandatory => 1, 
+					    usage => 'mhonarc is used to build Sympa web archives',
+					   },
+			'MIME::Base64' => {
+					   required_version =>'3.03',
+					   package_name => 'MIME-Base64',
+					   mandatory => 1,
+					   usage => 'required to compute digest for password and emails',
+					  },
+			'MIME::Charset' => {
+					    required_version =>'0.04.1',
+					    package_name => 'MIME-Charset',
+					    mandatory => 1,
+					    usage => 'used to encode mail body using a different charset',
+					   },
+			'MIME::EncWords' => {
+					     required_version =>'0.040',
+					     package_name => 'MIME-EncWords',
+					     mandatory => 1,
+					     usage => 'required to decode/encode SMTP header fields without breaking character encoding', 
+					    },
+			'MIME::Lite::HTML' => {
+					       required_version =>'1.23',
+					       package_name => 'MIME-Lite-HTML',
+					       mandatory => 1,
+					       usage => 'used to compose HTML mail from the web interface',
+					      },
+			'MIME::Tools' => {
+					  required_version =>'5.423',
+					  package_name => 'MIME-tools',
+					  mandatory => 1,
+					  usage => 'provides libraries for manipulating MIME messages',
+					 },
+			'Net::LDAP' => {
+					required_version =>'0.27', 
+					prerequisites => 'openldap-devel is needed to build the Perl code',
+					package_name => 'perl-ldap',
+					usage => 'required to query LDAP directories. Sympa can do LDAP-based authentication ; it can also build mailing lists with LDAP-extracted members.',
+				       },
+			'Net::Netmask' => {
+					   required_version =>'1.9015', 
+					   package_name => 'Net-Netmask',
+					   mandatory => 1,
+					   usage => 'used to check netmask within Sympa autorization scenario rules',
+					  },
+			'Net::SMTP' => {
+					package_name => 'libnet',
+					usage => 'this is required if you set \'list_check_smtp\' sympa.conf parameter, used to check existing aliases before mailing list creation.',
+				       },
+			'perl' => {
+				   required_version =>'5.008',
+				  },
+			'SOAP::Lite' => {
+					 required_version =>'0.60',
+					 package_name => 'SOAP-Lite',
+					 usage => 'required if you want to run the Sympa SOAP server that provides ML services via a "web service"',
+					},
+			'Template' => {
+				       package_name => 'Template-Toolkit',
+				       mandatory => 1,
+				       usage => 'Sympa template format, used for web pages and other mail, config file templates. See http://template-toolkit.org/.',
+				      },
+			'Term::ProgressBar' => {
+						required_version =>'2.09',
+						package_name => 'Term-ProgressBar',
+						mandatory => 1,	
+						usage => 'used while checking the RDBMS buffer size',
+					       },
+			'Time::HiRes' => {
+					  required_version =>'1.9719',
+					  package_name => 'Time-HiRes',
+					  mandatory => 1,
+					  usage => 'used by sympa.pl --test_database_message_buffer to test database performances',
+					 },
+			'XML::LibXML' => {
+					  prerequisites => 'libxml2-devel is needed to build the Perl code',
+					  package_name => 'XML-LibXML',
+					  mandatory => 1,
+					  usage => 'used to parse list configuration templates and instanciate list families',
+					 },
+		       );
+
+
+    print "##########################################################################################
+# This process will help you install all Perl (CPAN) modules required by Sympa software.
+# Sympa requires from 50 to 65 additional Perl modules to run properly. 
+# The whole installation process should take around 15 minutes.
+# You'll first have to configure the CPAN shell itself and select your favourite CPAN server.
+# Note that you might prefer to install the required Perl modules using your favourite DEB/RPM mechanism.
+# Feel free to interrupt the process if needed ; you can restart it safely afterward.
+##############################################################################################
+Strike return key to continue...
+";
+    my $rep = <STDIN>;
+
+    ### REQ perl version
+    print "\nChecking for PERL version:\n-----------------------------\n";
+    my $rpv = $cpan_modules{"perl"}{'required_version'};
+    if ($] >= $cpan_modules{"perl"}{'required_version'}){
+        print "your version of perl is OK ($]  >= $rpv)\n";
+    }else {
+        print "Your version of perl is TOO OLD ($]  < $rpv)\nPlease INSTALL a new one !\n";
+    }
+
+    print "\nChecking for REQUIRED modules:\n------------------------------------------\n";
+    check_modules('y', \%cpan_modules, 'mandatory');
+    print "\nChecking for OPTIONAL modules:\n------------------------------------------\n";
+    check_modules('n', \%cpan_modules, 'optional');
+
+    print <<EOM;
+******* NOTE *******
+You can retrieve all theses modules from any CPAN server
+(for example ftp://ftp.pasteur.fr/pub/computing/CPAN/CPAN.html)
+EOM
+###--------------------------
+# reports modules status
+# $cpan_modules is the cpan_modules structure
+# $type is the type of modules (mandatory | optional) that should be installed
+###--------------------------
+}
+
+sub check_modules {
+#    my($default, $todo, $versions, $opt_features) = @_;
+    my($default, $cpan_modules, $type) = @_;
+
+    print "perl module          from CPAN       STATUS\n"; 
+    print "-----------          ---------       ------\n";
+
+    foreach my $mod (sort keys %$cpan_modules) {
+      
+      ## Only check modules of the expected type
+      if ($type eq 'mandatory') {
+	next unless ($cpan_modules->{$mod}{mandatory});
+      }elsif ($type eq 'optional') {
+	next if ($cpan_modules->{$mod}{mandatory});
+      }
+      
+      ## Skip perl itself to prevent a huge upgrade
+      next if ($mod eq 'perl');
+
+        printf ("%-20s %-15s", $mod, $cpan_modules->{$mod}{package_name});
+
+        eval "require $mod";
+        if ($@) {
+            ### not installed
+            print "was not found on this system.\n";
+            install_module($mod, {'default' => $default}, $cpan_modules);
+        } else {
+
+	  my ($vs, $v);
+	  
+	  ## MHonArc module does not provide its version the standard way
+	  if ($mod =~ /^MHonArc/i) {
+	    require "mhamain.pl";
+	    $v = $mhonarc::VERSION;
+	  }else {
+           
+	    $vs = "$mod" . "::VERSION";
+	    
+	    $v;
+	    {
+	      no strict 'refs';
+	      $v = $$vs;
+	    }
+	  }
+
+	  my $rv = $cpan_modules->{$mod}{required_version} || "1.0" ;
+	  ### OK: check version
+	  if ($v ge $rv) {
+	    printf ("OK (%-6s >= %s)\n", $v, $rv);
+	    next;
+	  } else {
+	    print "version is too old ($v < $rv).\n";
+	    print ">>>>>>> You must update \"$cpan_modules->{$mod}{package_name}\" to version \"$cpan_modules->{$mod}{required_version}}\" <<<<<<.\n";
+	    install_module($mod, {'default' => $default}, $cpan_modules);
+	  }
+        }
+    }
+}
+
+##----------------------
+# Install a CPAN module
+##----------------------
+sub install_module {
+#    my ($module, $options, $opt_features) = @_;
+  my ($module, $options, $cpan_modules) = @_;
+
+    my $default = $options->{'default'};
+
+    unless ($ENV{'FTP_PASSIVE'} eq 1) {
+        $ENV{'FTP_PASSIVE'} = 1;
+        print "Setting FTP Passive mode\n";
+    }
+
+    ## This is required on RedHat 9 for DBD::mysql installation
+    my $lang = $ENV{'LANG'};
+    $ENV{'LANG'} = 'C' if ($ENV{'LANG'} =~ /UTF\-8/);
+
+    unless ($EUID == 0) {
+        print "\#\# You need root privileges to install $module module. \#\#\n";
+        print "\#\# Press the Enter key to continue checking modules. \#\#\n";
+        my $t = <STDIN>;
+        return undef;
+    }
+
+    unless ($options->{'force'}) {
+        printf "-> Usage of this module: %s\n", $cpan_modules->{$module}{usage} if ($cpan_modules->{$module}{usage});
+        printf "-> Prerequisites: %s\n", $cpan_modules->{$module}{prerequisites} if ($cpan_modules->{$module}{prerequisites});
+	printf "-> Install module $module ? [$default]";
+        my $answer = <STDIN>; chomp $answer;
+        $answer ||= $default;
+        return unless ($answer =~ /^y$/i);
+    }
+
+  $CPAN::Config->{'inactivity_timeout'} = 0; ## disable timeout to prevent timeout during modules installation 
+  $CPAN::Config->{'colorize_output'} = 1; 
+  $CPAN::Config->{'build_requires_install_policy'} = 'yes';  ## automatically installed prerequisites without asking
+  $CPAN::Config->{'prerequisites_policy'} = 'follow'; ## build prerequisites automatically
+  $CPAN::Config->{'load_module_verbosity'} = 'none';  ## minimum verbosity during module loading
+  $CPAN::Config->{'tar_verbosity'} = 'none';  ## minimum verbosity with tar command
+
+    #CPAN::Shell->clean($module) if ($options->{'force'});
+
+    CPAN::Shell->make($module);
+
+    if ($options->{'force'}) {
+        CPAN::Shell->force('test', $module);
+    }else {
+        CPAN::Shell->test($module);
+    }
+
+    CPAN::Shell->install($module); ## Could use CPAN::Shell->force('install') if make test failed
+
+    ## Check if module has been successfuly installed
+    unless (eval "require $module") {
+
+        ## Prevent recusive calls if already in force mode
+        if ($options->{'force'}) {
+            print  "Installation of $module still FAILED. You should download the tar.gz from http://search.cpan.org and install it manually.";
+            my $answer = <STDIN>;
+        }else {
+            print  "Installation of $module FAILED. Do you want to force the installation of this module? (y/N) ";
+            my $answer = <STDIN>; chomp $answer;
+            if ($answer =~ /^y/i) {
+                install_module($module, {'force' => 1}, $cpan_modules);
+            }
+        }
+    }
+
+    ## Restore lang
+    $ENV{'LANG'} = $lang if (defined $lang);
+
+}

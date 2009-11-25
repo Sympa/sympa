@@ -1,0 +1,3 @@
+title.gettext impossible
+
+true()                              smtp,md5,smime -> reject(reason='unsub_closed')

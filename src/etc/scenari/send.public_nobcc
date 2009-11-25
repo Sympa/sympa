@@ -1,0 +1,8 @@
+title.gettext public list, Bcc rejected (anti-spam)
+
+equal([is_bcc],1)	              smtp,smime,md5    -> reject
+true()				      smtp,md5,smime    -> do_it
+
+
+
+

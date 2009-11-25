@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <channel>
+  <title>[% FILTER escape_xml %][% title_clear_txt %][%END%][%|loc%]:[%END%]
+[%- IF errors %] [%|loc%]Server error[%END%] [% END -%]
+[%- IF action == 'latest_lists' -%][%|loc%] new lists [%END%]
+[%- ELSIF action == 'active_lists' -%][%|loc%] active lists [%END%]
+[%- ELSIF action == 'latest_arc' -%][%|loc%] most recent messages [%END%]
+[%- ELSIF action == 'latest_d_read' -%][%|loc%] most recent documents [%END%]
+[%- END -%]</title>
+  <link>[%- IF action == 'latest_arc' -%][% base_url %][% path_cgi %]/arc/[% list %]/
+[%- ELSIF action == 'latest_d_read' -%] [% base_url %][% path_cgi %]/d_read/[% list %]/
+[%- ELSE -%][% base_url %][% path_cgi %]
+[%- END -%]</link>
+  <description>[% IF errors %] [%|loc%]Server error[%END%] [% END -%]
+[%- IF action == 'latest_lists' -%] 
+ [%- IF count -%]
+   [%|loc(count)%]The %1 new lists[%END%] 
+ [%- ELSE -%]
+   [%|loc%]New lists[%END%] 
+ [%- END -%]
+ [%- IF for -%]
+   [%|loc(for)%]for %1 days[%END -%]
+ [%- END -%]
+ [%- IF subtitle %] - [% subtitle %] [% END -%]
+[%- ELSIF action == 'active_lists' -%]  
+ [%- IF count -%]
+   [%|loc(count)%]The %1 most active lists[%END%] 
+ [%- ELSE -%]
+   [%|loc%]The most active lists[%END%] 
+ [%- END -%]
+ [%- IF for -%]
+   [%|loc(for)%]for %1 days[%END%] 	
+ [%- END -%]
+ [%- IF subtitle %] - [% subtitle %] [% END -%]
+[%- ELSIF action == 'latest_arc' -%]  
+ [%- IF count -%]
+   [%|loc(count)%]The %1 most recent messages[%END%] 
+ [%- ELSE -%]
+   [%|loc%]Most recent messages[%END%] 
+ [%- END -%]
+ [%- IF for -%]
+   [%|loc(for)%]for %1 days [%END%] 	
+ [%- END -%]
+[%- ELSIF action == 'latest_d_read' -%]  
+ [%- IF count -%]
+   [%|loc(count)%]The %1 most recent shared documents[%END%] 
+ [%- ELSE -%]
+   [%|loc%]Most recent shared documents[%END%] 
+ [%- END -%]
+ [%- IF for -%]
+   [%|loc(for)%]for %1 days [%END%] 	
+ [%- END -%]
+[%- END -%]</description>
+  <language>[% lang %]</language>
+  <lastBuildDate>[% date %]</lastBuildDate>
+  <generator>Sympa[% version %]</generator>
+  <webMaster>listmaster@[% conf.host %]</webMaster>
+  <docs>http://web.resource.org/rss/1.0/spec</docs>
+
+
+[% IF action == 'latest_lists' -%]
+ [% FOREACH l = latest_lists -%]
+  <item>
+    <title>[% l.name %]@[% l.host %] - [% FILTER escape_xml %][% l.subject %][%END%]</title>
+    <link>[% base_url %][% path_cgi %]/info/[% l.name %]</link>
+  </item>
+ [% END -%]
+[% ELSIF action == 'active_lists' -%]
+ [% FOREACH l = active_lists -%]
+  <item>
+    <title>[%|loc(l.name,l.host,l.subject,l.msg_count)%]%1@%2 - %3: %4 messages[%END%]	[% IF l.average -%] - [%|loc(l.average)%]%1 by day [%END%][%END%]</title>
+    <link>[% base_url %][% path_cgi %]/info/[% l.name %]</link>
+  </item>
+ [% END -%]
+[% ELSIF action == 'latest_arc' -%]
+ [% FOREACH a = archives -%]
+  <item>
+    <title>[% FILTER escape_xml %][% a.subject %] - [% a.from %][%END%]</title>
+    <link>[% conf.wwsympa_url %]/arcsearch_id/[% list %]/[% a.year_month %]/[% a.message_id %]</link>
+    <pubDate>[% a.date_smtp %]</pubDate>
+  </item>
+ [% END -%]
+[% ELSIF action == 'latest_d_read' -%]
+ [% FOREACH d = documents -%]
+  <item>
+   [% IF d.url -%]
+    <title>[%|loc(d.anchor)%]Bookmark %1[%END%]</title>
+    <link>[% d.url %]</link>
+    [% ELSE -%]
+     <title>[% d.name %]</title>
+    <link>[% FILTER escape_xml %][% base_url %][% path_cgi %]/d_read/[% list %][% d.escaped_content_dir %]/[% d.escaped_name %][%END%]</link>
+    [% END -%]
+  </item>
+  [% END -%]
+[% END -%]
+ </channel>
+</rss>

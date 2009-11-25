@@ -1,0 +1,5 @@
+title.gettext public list multipart/mixed messages are forwarded to moderator
+
+match([header->Content-Disposition],/attachment/)      	smtp,smime,md5    -> editorkey
+match([header->Content-Type],/multipart\/mixed/)        smtp,smime,md5    -> editorkey
+true()                                         		smtp,md5,smime    -> do_it

@@ -1,0 +1,191 @@
+/* Sybase Database creation script 2.5.2 */
+/* Thierry Charles <tcharles@electron-libre.com> */
+/* 15/06/01 : extend password_user */
+
+/* sympa database must have been created */
+/* eg: create database sympa on your_device_data=10 log on your_device_log=4 */
+use sympa
+go
+
+create table user_table
+(
+    email_user             varchar(100)           not null,
+    gecos_user             varchar(150)           null    ,
+    password_user          varchar(40)            null    , 
+    last_login_date_user   numeric,
+    last_login_host_user   varchar (60),
+    cookie_delay_user      numeric                null    ,
+    lang_user              varchar(10)            null    ,
+    attributes_user	   varchar(255)           null    ,
+    data_user              varchar(255)         null    ,
+    constraint ind_user primary key (email_user)
+)
+go
+
+create index email_user_fk on user_table (email_user)
+go
+
+
+create table subscriber_table
+(
+    list_subscriber        varchar(50)            not null,
+    user_subscriber        varchar(100)           not null,
+    custom_attribute_subscriber varchar (500)          null    ,
+    robot_subscriber       varchar(80)           not null,
+    date_subscriber        datetime               not null,
+    update_subscriber      datetime               null,
+    visibility_subscriber  varchar(20)            null    ,
+    reception_subscriber   varchar(20)            null    ,
+    topics_subscriber	   varchar(200)           null,
+    bounce_subscriber      varchar(35)            null    ,
+    bounce_score_subscriber numeric               null    ,
+    comment_subscriber     varchar(150)           null    ,
+    subscribed_subscriber  numeric		  null    ,
+    included_subscriber    numeric                null    ,
+    include_sources_subscriber varchar(50)        null    ,
+    constraint ind_subscriber primary key (list_subscriber, user_subscriber, robot_subscriber)
+)
+go
+
+create index list_subscriber_fk on subscriber_table (list_subscriber)
+go
+
+create index user_subscriber_fk on subscriber_table (user_subscriber)
+go
+
+create index robot_subscriber_fk on subscriber_table (robot_subscriber)
+go
+
+create table admin_table 
+(
+	list_admin 		varchar(50)       not null,
+ 	user_admin 		varchar(100) 	  not null,
+ 	robot_admin 		varchar(80) 	  not null,
+	role_admin 		varchar(15)       not null,
+	date_admin 		datetime 	  not null,
+	update_admin 		datetime          null,
+	reception_admin 	varchar(20)       null,
+	visibility_admin 	varchar(20)       null,
+	comment_admin 		varchar(150)	  null,
+	subscribed_admin  	numeric           null,
+	included_admin  	numeric           null,
+	include_sources_admin  	varchar(50)       null,
+	info_admin   		varchar(150)      null,
+	profile_admin  		varchar(15)       null,
+       constraint ind_admin primary key (list_admin, user_admin,robot_admin,role_admin)
+)
+go
+
+create index list_admin_fk on admin_table (list_admin)
+go
+
+create index user_admin_fk on admin_table (user_admin)
+go
+
+create index robot_admin_fk on admin_table (robot_admin)
+go
+
+create index role_admin_fk on admin_table (role_admin)
+go
+
+create table netidmap_table 
+(
+        netid_netidmap             varchar (100) NOT NULL,
+	serviceid_netidmap	   varchar (100) NOT NULL,
+	robot_netidmap	           varchar (80) NOT NULL,
+        email_netidmap             varchar (100),
+        constraint ind_netidmap primary key (netid_netidmap, serviceid_netidmap, robot_netidmap)
+)
+go
+
+create index netid_netidmap_fk on netidmap_table (netid_netidmap)
+go
+
+create index serviceid_netidmap_fk on netidmap_table (serviceid_netidmap)
+go
+
+create index robot_netidmap_fk on netidmap_table (robot_netidmap)
+go
+
+CREATE TABLE logs_table (
+	id_logs			numeric NOT NULL,
+	date_logs		numeric NOT NULL,
+	robot_logs		varchar(80),
+	list_logs		varchar(50),
+	action_logs		varchar(50) NOT NULL,
+	parameters_logs		varchar(100),
+	target_email_logs	varchar(100),
+	user_email_logs		varchar(100),
+	msg_id_logs		varchar(255),
+	status_logs		varchar(10) NOT NULL,
+	error_type_logs		varchar(150),
+	client_logs		varchar(100),
+	daemon_logs		varchar(10) NOT NULL,
+	constraint ind_logs primary key (id_logs)
+)
+go
+
+create index id_logs_fk on logs_table (id_logs)
+go
+
+CREATE TABLE session_table (
+	id_session			varchar(30) NOT NULL,
+	start_date_session		numeric NOT NULL,
+	date_session		        numeric NOT NULL,
+	remote_addr_session		varchar(60),
+	robot_session		        varchar(80),
+	email_session		        varchar(100),
+	hit_session     	        numeric,
+	data_session		        varchar(255),
+	constraint ind_session primary key (id_session)
+)
+go
+
+create index id_session_fk on session_table (id_session)
+go
+
+CREATE TABLE one_time_ticket_table (
+	ticket_one_time_ticket		varchar(30),
+	robot_one_time_ticket		varchar(80),
+	email_one_time_ticket		varchar(100),
+	date_one_time_ticket		int(11),
+	data_one_time_ticket		varchar(200),
+	remote_addr_one_time_ticket	varchar(60),
+	status_one_time_ticket		varchar(60),
+	constraint ind_one_time_ticket primary key (ticket_one_time_ticket)
+)
+go
+
+create index ticket_one_time_ticket_fk on one_time_ticket_table (ticket_one_time_ticket)
+go
+
+CREATE TABLE bulkmailer_table (
+  	messagekey_bulkmailer  	varchar(80),
+	packetid_bulkmailer 	varchar(33),
+	receipients_bulkmailer 	text,
+	returnpath_bulkmailer 	varchar(100),
+	robot_bulkmailer 	varchar(80),
+	listname_bulkmailer 	varchar(50),
+	verp_bulkmailer 	int(1),
+	priority_message_bulkmailer 	int(10),
+	priority_packet_bulkmailer 	int(10),
+	reception_date_bulkmailer 	int(11),
+	delivery_date_bulkmailer 	int(11),
+	lock_bulkmailer 	varchar(30),
+	constraint ind_bulkmailer primary key (messagekey_bulkmailer, packetid_bulkmailer)
+)
+
+create index messagekey_bulkmailer_fk on bulkmailer_table (messagekey_bulkmailer)
+go
+create index packetid_bulkmailer_fk on bulkmailer_table (packetid_bulkmailer)
+go
+
+CREATE TABLE bulkspool_table (
+  	messagekey_bulkspool  	varchar(33),
+	message_bulkspool 	text,
+	lock_bulkspool 	int(1),
+	constraint ind_bulkspool primary key (messagekey_bulkspool)
+)
+
+create index messagekey_bulkspool_fk on bulkspool_table (messagekey_bulkspool)
+go

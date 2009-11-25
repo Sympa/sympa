@@ -1,0 +1,4 @@
+title.gettext subscribe is impossible
+
+true()   smtp,md5,smime -> reject(reason='subscribe_closed')
+

@@ -1,0 +1,12 @@
+<!-- $Id: title.tt2 5902 2009-06-16 14:24:50Z david.verdin $ -->
+
+<!-- begin title.tt2 -->
+[% IF  conf.logo_html_definition %]
+<div id="logo" >[% conf.logo_html_definition %]</div>
+[% ELSE %]
+<div id="logo" ><img style="float: left;" src="[% icons_url %]/logo_sympa.png" alt="SYMPA logo"></div>
+[% END %]
+<div id="Title">[% robot_title %]<br /></div>
+<div id="top"><a class="displayNone" href="#Paint">Skip to Content.</a></div>
+<!-- end title.tt2 -->
+

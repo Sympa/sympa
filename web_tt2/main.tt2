@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="[% iso639 = locale.match('^(.)(.)'); iso639.0; iso639.1 %]" xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- $Id: main.tt2 6228 2009-09-23 08:56:52Z david.verdin $ -->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Sympa" />
+
+<title> [% main_title %] - [% action %] </title>
+
+[% IF custom_css || session.custom_css %]
+<style type="text/css">
+[% PROCESS css.tt2 %]
+</style>
+
+[% ELSE %]
+<link rel="stylesheet" href="[% css_url %]/style.css" type="text/css" media="screen" title="Sympa CSS" />
+[% END %]
+
+
+[% PROCESS css_ie.tt2 %]
+
+
+
+<!-- RSS chanel -->
+   [% IF list -%] 
+     [% IF arc_public_access %]<link rel="alternate" type="application/xml" title="[%|loc%]RSS Latest messages[%END%]" href="[% base_url%][% path_cgi %]/rss/latest_arc/[%list%]?count=20"/>[% END -%]
+     [% IF shared_public_access %]<link rel="alternate" type="application/xml" title="[%|loc%]RSS Latest documents[%END%]" href="[% base_url%][% path_cgi %]/rss/latest_d_read/[%list%]?count=20"/>[% END -%]
+   [% ELSE -%]
+     [% IF (action == 'lists') && topic -%]
+       <link rel="alternate" type="application/xml" title="[%|loc%]RSS Latest lists[%END%]" href="[% base_url%][% path_cgi %]/rss/latest_lists/[%topic%]?count=20"/>
+       <link rel="alternate" type="application/xml" title="[%|loc%]RSS Active lists[%END%]" href="[% base_url%][% path_cgi %]/rss/active_lists/[%topic%]?count=20"/>
+     [% ELSE -%]
+     <link rel="alternate" type="application/xml" title="[%|loc%]RSS Latest lists[%END%]" href="[% base_url%][% path_cgi %]/rss/latest_lists?count=20"/>
+     <link rel="alternate" type="application/xml" title="[%|loc%]RSS Active lists[%END%]" href="[% base_url%][% path_cgi %]/rss/active_lists?count=20"/>
+     [% END -%]
+   [% END -%]
+
+
+<!-- the following CSS have to be improved before to be used -->
+<!-- <link rel="stylesheet" href="[% css_url %]/print.css" type="text/css" media="print" />                                            -->
+<!-- <link rel="alternative stylesheet" href="[% css_url %]/fullPage.css" type="text/css" media="screen" title="View Full Page" />     -->
+<!-- <link rel="alternative stylesheet" href="[% css_url %]/print-preview.css" type="text/css" media="screen" title="Print Preview" /> -->
+
+<link rel="shortcut icon" href="[% icons_url %]/favicon_sympa.png" />
+
+[% PROCESS javascript.tt2 %]
+
+[% IF base %] <base href="[% base %]" /> [% END %]
+
+</head>
+
+<body onload="[% IF use_htmlarea %] HTMLArea.replaceAll();[% END %][% IF back_to_mom %] setTimeout('refresh_mom_and_die()',1000);[% END %]">
+
+
+
+<a name="top"></a>
+
+<noscript><em>[%|loc%]Please activate JavaScript in your web browser[%END%]</em></noscript>
+
+[% IF nomenu %]
+       [% PROCESS error.tt2 IF errors %]
+       <div class="ContentBlock"> 
+         [% PROCESS notice.tt2 IF notices %]
+         [% PROCESS "${action}.tt2" IF action %]
+       </div>
+[% ELSE %]
+
+       [% PROCESS error.tt2 IF errors %]
+       [% PROCESS login_menu.tt2 %]
+<div id="Canvas">
+
+  <div id="Header">
+    
+	<!-- a href="javascript:afficheId('contenu','Stretcher')">ouvrir</a>
+    	<a href="javascript:cacheId('contenu','Stretcher');">Fermer</a-->
+
+    [% PROCESS title.tt2 %]
+    [% PROCESS menu.tt2 %]
+  </div> <!-- end div Header -->
+  <!-- <div class="contenant" id="contenu"> --> <!-- To hide Menus -->&nbsp;
+  <div id="Menus"><!-- Start Menus -->&nbsp;
+	
+    [% PROCESS menu_search.tt2 %]
+    [% PROCESS list_menu.tt2 IF list %]
+    [% PROCESS your_lists.tt2 IF !list %]
+    [% PROCESS setlang.tt2 %]
+  </div><!-- End div Menus -->
+  <!-- </div> --><!-- End div contenant -->
+	
+
+  <div id="Stretcher">  <!-- <span id="toggleMenu" title="A javascript could hide or show the menu" class="smalltext info printNone toggleNone">toggle menu</span><br /> --> &nbsp;<br />
+     <div id="Paint">
+
+       [% IF list %]
+	<div class="listTitle"><a href="[% path_cgi %]/info/[% list %]">[% list_protected_email %]</a>&nbsp;</div>
+        <div class="listTitle description">
+	[% IF list_title %] <span> [% list_title %] </span> [% END %]</div><br />
+       [% END %]
+
+	 [% PROCESS nav.tt2 %]
+
+        <div class="ContentBlock">
+         [% PROCESS notice.tt2 IF notices %]
+	 [% IF action == 'edit_list_request' %]<br /><br />[% END %]
+         [% PROCESS "${action}.tt2" IF action %]
+       </div><!-- End div ContentBlock -->
+      <div class="top"><a href="#top" title="Top of Page"><img src="[% icons_url %]/top.png" alt="Top of page" /></a></div>
+     </div><!-- End div Paint -->
+  </div><!-- end div Stretcher -->
+
+
+  [% PROCESS dumpvars.tt2 IF dumpvars == 'true'%]
+
+</div> <!-- end div canvas -->
+
+  [% PROCESS footer.tt2 %]
+[% END %]
+</body>
+<!-- end main.tt2 -->
+</html>

@@ -1,0 +1,14 @@
+From: [% fromlist %]
+Subject: [% FILTER qencode %][%|loc(list.name)%]Welcome to list %1[%END%][%END%]
+
+[%|loc(list.name,list.host)%]Welcome to list %1@%2[%END%]
+[%|loc(user.email)%]Your subscription email is %1[%END%]
+
+[% TRY %]
+[% INSERT "info" %]
+[% CATCH %]
+[% END %]
+
+[%|loc%]The list homepage:[%END%] [% conf.wwsympa_url %]/info/[% list.name %]
+[%|loc%]General informations about mailing lists:[%END%] [% conf.wwsympa_url %]/help/introduction
+

@@ -1,0 +1,62 @@
+From: SYMPA <[% conf.email %]@[% conf.host %]>
+Subject: [% FILTER qencode %][%|loc%]User guide[%END%][%END%]
+
+              SYMPA -- Systeme de Multi-Postage Automatique
+                       (Automatic Mailing System)
+
+                                [%|loc%]User's Guide[%END%]
+
+
+[%|loc%]SYMPA is an electronic mailing-list manager that automates list management functions such as subscriptions, moderation, and archive management.[%END%]
+
+[%|loc(conf.sympa)%]All commands must be sent to the electronic address %1[%END%]
+
+[%|loc%]You can put multiple commands in a message. These commands must appear in the message body and each line must contain only one command.[%END%]
+
+[%|loc%]Available commands are:[%END%]
+
+ [%|loc%]HELp                        * This help file[%END%]
+ [%|loc%]INFO <list>                 * Information about a list[%END%]
+ [%|loc%]LISts                       * Directory of lists managed on this node[%END%]
+ [%|loc%]REView <list>               * Displays the subscribers to <list>[%END%]
+ [%|loc%]WHICH                       * Displays which lists you are subscribed to[%END%]
+ [%|loc%]SUBscribe <list> <name>     * To subscribe or to confirm a subscription to <list>.[%END%]
+
+ [%|loc%]UNSubscribe <list> <EMAIL>  * To quit <list>. <EMAIL> is an optional email address, useful if different from your "From:" address.[%END%]
+ [%|loc%]UNSubscribe * <EMAIL>       * To quit all lists.[%END%]
+
+ [%|loc%]SET <list>|* NOMAIL         * To suspend the message reception for <list>[%END%]
+ [%|loc%]SET <list>|* DIGEST         * Message reception in compilation mode[%END%]
+ [%|loc%]SET <list|*> DIGESTPLAIN    * Message reception in compilation mode, sent as a plain text email with all attachments[%END%]
+ [%|loc%]SET <list>|* SUMMARY        * Receiving the message index only[%END%]
+ [%|loc%]SET <list>|* NOTICE         * Receiving message subject only[%END%]
+ [%|loc%]SET <list>|* MAIL           * <list> reception in normal mode[%END%]
+ [%|loc%]SET <list>|* CONCEAL        * To become unlisted (hidden subscriber address)[%END%]
+ [%|loc%]SET <list>|* NOCONCEAL      * Subscriber address visible via REView[%END%]
+
+
+ [%|loc%]INDex <list>                * <list> archive file list[%END%]
+ [%|loc%]GET <list> <file>           * To get <file> of <list> archive[%END%]
+ [%|loc%]LAST <list>                 * Used to received the last message from <list>[%END%]
+ [%|loc%]INVITE <list> <email>       * Invite <email> for subscription in <list>[%END%]
+ [%|loc%]CONFIRM <key>               * Confirmation for sending a message (depending on the list configuration)[%END%]
+ [%|loc%]QUIT                        * Indicates the end of the commands (to ignore a signature)[%END%]
+
+[% IF is_owner -%]
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+[%|loc%]The following commands are available only for lists owners or moderators:[%END%]
+
+ [%|loc%]ADD <list> user@host Full name  * To add a user to a list[%END%]
+ [%|loc%]DEL <list> user@host            * To delete a user from a list[%END%]
+ [%|loc%]STATS <list>                    * To consult the statistics for <list>[%END%]
+
+ [%|loc%]REMIND <list>                   * Send a reminder message to each subscriber (this is a way to inform anyone what is his real subscribing email).[%END%]
+[% END %]
+[% IF is_editor -%]
+
+ [%|loc%]DISTribute <list> <key>        * Moderation: to validate a message[%END%]
+ [%|loc%]REJect <list> <key>            * Moderation: to reject a message[%END%]
+ [%|loc%]MODINDEX <list>                 * Moderation: to view the list of messages to moderate[%END%]
+[% END %]
+
+[%|loc%]Powered by Sympa[%END%] [% conf.version %][%|loc%]:[%END%] http://www.sympa.org

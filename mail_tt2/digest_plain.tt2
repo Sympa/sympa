@@ -1,0 +1,27 @@
+From: [% fromlist %]
+To: [% to %]
+Reply-to: [% replyto %]
+Subject: [% FILTER qencode %][%|loc(list.name,date)%]%1 Digest %2[%END%] [% IF total_group > 1 -%]([% current_group %]/[% total_group %])[% END %][%END%]
+
+[%|loc(list.name,date)%]%1 Digest %2[%END%]
+
+[%|loc%]Table of contents:[%END%]
+
+[% FOREACH m = msg_list -%]
+[% m.id %]. [% m.subject %] - [% m.from %]
+[% END %]
+
+----------------------------------------------------------------------
+
+[% FOREACH m = msg_list -%]
+Date: [% m.date %]
+From: [% m.from %]
+Subject: [% m.subject %]
+
+[% m.plain_body %]
+
+------------------------------
+
+[% END %]
+[%|loc(list.name,date)%]End of %1 Digest %2[%END%]
+*********************************************

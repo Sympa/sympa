@@ -1,0 +1,39 @@
+<!-- $Id: menu.tt2 5682 2009-04-29 17:29:30Z david.verdin $ -->
+
+<div class="navBar printNone">
+<ul id="MainMenuLinks">	
+
+[% IF may_create_list %]
+   [% IF action == 'create_list_request' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]                                              <li><a class="[% class %]" href="[% path_cgi %]/create_list_request" >[%|loc%]Create list[%END%]</a></li>
+[% END %]
+
+[% IF is_listmaster %]
+   [% IF action == 'serveradmin' or action == 'skinsedit' or action == 'get_pending_lists'  or action == 'get_closed_lists'  or action == 'get_latest_lists'   or action == 'get_inactive_lists' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+   <li><a  class="[% class %]" href="[% path_cgi %]/serveradmin" >[%|loc%]Sympa admin[%END%]</a></li>
+[% END %]
+
+ [% IF action == 'lists' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+<li><a class="[% class %]" href="[% path_cgi %]/lists">[%|loc%]List of lists[%END%]</a></li>
+
+ [% IF action == 'home' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+<li><a class="[% class %]" href="[% path_cgi %]/home">[%|loc%]Home[%END%]</a></li>
+
+[% IF action == 'help' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+  <li> <a class="[% class %]" href="[% path_cgi %]/help" >[%|loc%]Help[%END%]</a></li>
+
+[% IF  conf.main_menu_custom_button_1_title %]
+  <li> <a class="MainMenuLinks"  [% IF  conf.main_menu_custom_button_1_target %] target ="[% conf.main_menu_custom_button_1_target %]"[% END %] href="[% conf.main_menu_custom_button_1_url %]">[% conf.main_menu_custom_button_1_title %]</a></li>
+[%END%]
+[% IF  conf.main_menu_custom_button_2_title %]
+  <li> <a class="MainMenuLinks"  [% IF  conf.main_menu_custom_button_2_target %] target ="[% conf.main_menu_custom_button_2_target %]"[% END %] href="[% conf.main_menu_custom_button_2_url %]">[% conf.main_menu_custom_button_2_title %]</a></li>
+[%END%]
+[% IF  conf.main_menu_custom_button_3_title %]
+  <li> <a class="MainMenuLinks"  [% IF  conf.main_menu_custom_button_3_target %] target ="[% conf.main_menu_custom_button_3_target %]"[% END %] href="[% conf.main_menu_custom_button_3_url %]">[% conf.main_menu_custom_button_3_title %]</a></li>
+[%END%]
+
+</ul>
+
+
+</div>
+
+<!-- end menu.tt2 -->

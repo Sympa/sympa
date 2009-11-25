@@ -1,0 +1,3 @@
+title.gettext remove subscriber impossible
+
+true()   smtp,md5,smime -> reject(reason='del_closed')

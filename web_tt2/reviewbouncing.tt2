@@ -1,0 +1,134 @@
+<!-- $Id: reviewbouncing.tt2 5204 2008-11-07 13:35:51Z david.verdin $ -->
+
+<h3>[%|loc%]Manage bouncing list members[%END%] <a class="input" href="[% path_cgi %]/nomenu/help/admin#manage_bounces" title="[%|loc%]Open in a new window[%END%]" onclick="window.open('','wws_help','toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,copyhistory=no,width=400,height=200')" target="wws_help">[%|loc%]Help[%END%]</a></h3>
+
+<br />
+<a class="actionMenuLinks" href="[% path_cgi %]/dump/[% list %]/bounce">[%|loc%]Dump[%END%]</a>
+
+<form action="[% path_cgi %]" method="post"> 
+<fieldset>
+      <input type="hidden" name="previous_action" value="reviewbouncing" />
+      <input type="hidden" name="list" value="[% list %]" />
+      <input type="hidden" name="action" value="search" />
+  <input size="25" name="filter" value="[% filter %]" />&nbsp;<input class="MainMenuLinks" type="submit" name="action_search" value="[%|loc%]Search[%END%]" />
+</fieldset>
+</form>
+
+<form method="post" action="[% path_cgi %]">
+<fieldset>
+    <input class="MainMenuLinks" type="submit" value="[%|loc%]Remind all subscribers[%END%]" name="action_remind" onclick="return request_confirm('[% FILTER escape_quote %][%|loc(total)%]Do you really want to send a subscription reminder message to the %1 subscribers?[%END%][%END%]')" />
+    <input type="hidden" name="action" value="remind" />
+    <input type="hidden" name="list" value="[% list %]" />
+</fieldset>  
+</form>	
+<br />
+
+<form action="[% path_cgi %]">
+<fieldset>
+  <input type="hidden" name="sortby" value="[% sortby %]" />
+  <input type="hidden" name="action" value="reviewbouncing" />
+  <input type="hidden" name="list" value="[% list %]" />
+  <select name="size" onchange="this.form.submit();">
+          <option value="[% size %]" selected="selected">[% size %]</option>
+	  <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+	  <option value="500">500</option>
+  </select>
+</fieldset>  
+</form>
+<br />
+
+<div class="text_right">
+        [% IF prev_page %]
+	  <a href="[% path_cgi %]/reviewbouncing/[% list %]/[% prev_page %]/[% size %]"><img src="[% icons_url %]/left.png" alt="[%|loc%]Previous page[%END%]"></a>
+        [% END %]
+        [% IF page %]
+  	  [%|loc(page,total_page)%]page %1 / %2[%END%]
+        [% END %]
+        [% IF next_page %]
+	  <a href="[% path_cgi %]/reviewbouncing/[% list %]/[% next_page %]/[% size %]"><img src="[% icons_url %]/right.png" alt="[%|loc%]Next page[%END%]"></a>
+        [% END %]
+</div>
+
+<form name="myform" action="[% path_cgi %]" method="post">
+<fieldset>
+     <input type="hidden" name="list" value="[% list %]" /> 	 
+     <input type="hidden" name="previous_action" value="reviewbouncing" /> 	 
+  <table summary="[%|loc%]Table which display list bounces[%END%]" class="listOfItems">
+      <tr>
+	<th rowspan="2">X</th>
+        <th rowspan="2">[%|loc%]Email[%END%]</th>
+	<th rowspan="2">[%|loc%]Bounce score[%END%]</th>
+	<th colspan="3">[%|loc%]Details[%END%]</th>
+      </tr>
+      <tr>
+	<th>[%|loc%]# of bounces[%END%]</th>
+	<th>[%|loc%]First bounce[%END%]</th>
+	<th>[%|loc%]Last bounce[%END%]</th>
+      </tr>
+
+      
+      [% FOREACH u = members %]
+      
+	[% IF dark == '1' %]
+	  <tr>
+	[% ELSE %]
+	  <tr class="color0">
+	[% END %]
+
+	  <td>
+	    <input type="checkbox" name="email" value="[% u.escaped_email %]" />
+	  </td>
+	  <td>
+	      <a href="[% path_cgi %]/editsubscriber/[% list %]/[% u.escaped_email %]/reviewbouncing">[% u.email %]</a>
+
+	  </td>
+          <td class="text_center 
+	  [% IF u.bounce_level == '2' %]
+            bounce_level2
+	  [% ELSIF u.bounce_level == '1' %]
+	    bounce_level1
+	  [% END %]
+	  ">
+             [% IF ! u.bounce_score %]
+              [%|loc%]no score[%END%]
+             [% ELSE %]
+  	      [% u.bounce_score %]
+             [% END %]
+	  </td>
+          <td>[% u.bounce_count %]</td>
+          <td>[% u.first_bounce %]</td>
+          <td>[% u.last_bounce %]</td>
+       </tr>
+
+        [% IF dark == '1' %]
+	  [% SET dark = 0 %]
+	[% ELSE %]
+	  [% SET dark = 1 %]
+	[% END %]
+
+        [% END %]
+      </table>
+  <div class="text_right">
+        [% IF prev_page %]
+	  <a href="[% path_cgi %]/reviewbouncing/[% list %]/[% prev_page %]/[% size %]"><img src="[% icons_url %]/left.png" alt="[%|loc%]Previous page[%END%]" /></a>
+        [% END %]
+        [% IF page %]
+  	  [%|loc(page,total_page)%]page %1 / %2[%END%]
+        [% END %]
+        [% IF next_page %]
+	  <a href="[% path_cgi %]/reviewbouncing/[% list %]/[% next_page %]/[% size %]"><img src="[% icons_url %]/right.png" alt="[%|loc%]Next page[%END%]" /></a>
+        [% END %]
+  </div>
+  [% IF is_owner %]
+  <br />
+  <input class="MainMenuLinks" type="submit" name="action_del" value="[%|loc%]Delete selected email addresses[%END%]" />
+  <input type="checkbox" name="quiet" /> [%|loc%]quiet[%END%]<br />
+  <input class="MainMenuLinks" type="submit" name="action_resetbounce" value="[%|loc%]Reset errors for selected users[%END%]" /><br />
+        [% END %]
+
+  <input class="MainMenuLinks" type="button" value="[%|loc%]Toggle Selection[%END%]" onclick="toggle_selection(document.myform.email)" />
+</fieldset>
+</form>
+<!-- end reviewbouncing.tt2 -->

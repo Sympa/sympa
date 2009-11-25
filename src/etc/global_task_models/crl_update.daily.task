@@ -1,0 +1,5 @@
+title.gettext daily update of the certificate revocation list
+
+/ACTION
+update_crl (CA_list, [execution_date]+1d)
+next ([execution_date] + 1d, ACTION)

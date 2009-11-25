@@ -1,0 +1,30 @@
+From: SYMPA <[% conf.email %]@[% conf.host %]>
+To: [% newuser.email %]
+[% IF action == 'subrequest' -%]
+Subject: [% FILTER qencode %][%|loc(conf.title,list)%]%1 / subscribing to %2[%END%][%END%]
+[% ELSIF action == 'sigrequest' -%]
+Subject: [% FILTER qencode %][%|loc(conf.title,list)%]%1 / unsubscribing from %2[%END%][%END%]
+[% ELSE -%]
+Subject: [% FILTER qencode %][%|loc(conf.title)%]%1 / your environment[%END%][%END%]
+[% END -%]
+
+[% IF action == 'subrequest' -%]
+
+[%|loc(list,conf.host,request_from_host)%]Someone, probably you, requested to subscribe to list %1@%2. (This request came from host %3).[%END%]
+[%|loc%]You may ignore this subscription request or click on the following link in order to confirm it [%END%]: [% base_url %][% path_cgi %]/ticket/[% one_time_ticket %]
+
+[% ELSIF action == 'sigrequest' -%]
+[%|loc(list)%]You asked to be unsubscribed from %1 mailing list.[%END%]
+
+[%|loc%]To unsubscribe from the list, you need to provide the following password[%END%]
+
+	[%|loc(newuser.password)%]password: %1[%END%]
+
+[% ELSE -%]
+
+[%|loc(conf.host,request_from_host)%]Someone, probably you, requested to allocate or renew your password for your list server account %1. (This request came from host %2).[%END%]
+[%|loc%]You may ignore this request or click on the following link in order to choose your password. [%END%]: [% base_url %][% path_cgi %]/ticket/[% one_time_ticket %]
+
+[%END%]
+
+[%|loc(base_url,path_cgi)%]Help on Sympa: %1%2[%END%]/help

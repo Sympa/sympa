@@ -1,0 +1,45 @@
+<!-- $Id: latest_lists.tt2 5198 2008-11-03 16:06:31Z david.verdin $ -->
+
+<h2>
+ [% IF count %]
+   [%|loc(count)%]The %1 newest lists[%END%] 
+ [% ELSE %]
+   [%|loc%]New lists[%END%] 
+ [% END %]
+
+ [% IF for %]
+   [%|loc(for)%] for %1 days [%END%] 	
+ [% END %]
+</h2> 	
+
+<br /> 
+
+
+<table class="table_style" summary="[%|loc%] The latest lists of this robot[%END%] ">
+<tr class="color4">
+   <th><strong>[%|loc%]Listname[%END%]</strong></th>
+   <th><strong>[%|loc%]Creation date[%END%]</strong></th>
+   <th><strong>[%|loc%]Subject[%END%]</strong></th>
+ </tr>
+
+[% FOREACH l = latest_lists %]
+
+[% IF dark == '1' %]
+  <tr valign="top">[% SET dark = 0 %]
+[% ELSE %]
+  <tr class="color0">[% SET dark = 1 %]
+[% END %]
+   <td>
+     <a href="[% path_cgi %]/info/[% l.name %]" ><strong>[% hidden_head %][% l.name %][% hidden_at %][% l.host %][% hidden_end %]</strong></a>
+   </td>
+
+  <td> [% l.date %] </td>
+  <td> [% l.subject %] </td>
+ </tr>
+ 
+ [% END %] 
+ 
+ <br />
+</table>
+
+<!-- end latest_lists.tt2 -->

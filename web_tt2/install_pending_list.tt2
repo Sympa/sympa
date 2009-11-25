@@ -1,0 +1,29 @@
+<!-- $Id: install_pending_list.tt2 6098 2009-08-13 08:26:28Z olivier.salaun $ -->
+
+<br />
+
+<br />
+<table summary="" class="preferences">
+<tr class="color_light">
+<td>
+<table summary="" class="preferences">
+<tr class="color_light">
+ <td><strong>[%|loc%]Listname:[%END%]</strong></td><td>[% list %]</td>
+</tr>
+<tr class="color_light">
+ <td><strong>[%|loc%]Subject:[%END%] </strong></td><td>[% list_subject %]</td>
+</tr>
+<tr class="color_light">
+ <td><strong>[%|loc%]List requested by[%END%] </strong></td><td>[% list_request_by %] [%|loc(list_request_date)%]on %1[%END%]</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br /><br />
+[% IF is_listmaster %]
+[% IF auto_aliases %]
+[%|loc%]Aliases have been installed.[%END%]
+[% END %]
+[% END %]
+<!-- end install_pending_list.tt2 -->

@@ -1,0 +1,69 @@
+subject [% subject %]
+
+status [% status %]
+
+[% IF topics -%]
+topics [% topics %]
+[% END %]
+
+visibility noconceal
+
+send privateoreditorkey
+
+web_archive
+  access public
+
+archive
+  period month
+  access owner
+
+clean_delay_queuemod 15
+
+reply_to_header
+value list
+
+subscribe open
+
+unsubscribe open,notify
+
+review owner
+
+invite default
+
+custom_subject [% listname %]
+
+digest 3 4:36
+
+default_user_options
+  reception summary
+
+[% FOREACH o = owner -%]
+owner
+  email [% o.email %]
+  profile privileged
+  [% IF o.gecos -%] 
+  gecos [% o.gecos %]
+  [% END %]
+
+[% END %]
+
+[% IF editor -%]
+[% FOREACH e = editor -%]
+editor
+  email [% e.email %]
+
+[% END %]
+[% END %]
+
+shared_doc
+d_edit default
+d_read public
+
+creation
+  date [% creation.date %]
+  date_epoch [% creation.date_epoch %]
+[% IF creation_email -%]
+  email [% creation_email %]
+[% END %]
+
+serial 0

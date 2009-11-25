@@ -1,0 +1,33 @@
+<!-- $Id: get_pending_lists.tt2 5682 2009-04-29 17:29:30Z david.verdin $ -->
+
+<div class="block">
+<form action="[% path_cgi %]" method="post">
+<fieldset>
+<strong>[%|loc%]Pending lists[%END%]</strong>
+<table summary="[%|loc%]Pending lists[%END%]" class="table_style">
+ <tr class="color4">
+   <th>[%|loc%]list name[%END%]</th>
+   <th>[%|loc%]list subject[%END%]</th>
+   <th>[%|loc%]Requested by[%END%]</th>
+   <th>[%|loc%]Requested date[%END%]</th>
+ </tr>
+
+[% FOREACH list = pending %]
+[% IF dark == '1' %]
+  <tr>[% SET dark = 0 %]
+[% ELSE %]
+  <tr class="color0">[% SET dark = 1 %]
+[% END %]
+
+<td><a href="[% path_cgi %]/set_pending_list_request/[% list.key %]">[% list.key %]</a></td>
+<td>[% list.value.subject %]</td>
+<td>[% list.value.by %]</td>
+<td>[% list.value.date %]</td>
+</tr>
+[% END %]
+</table>
+</fieldset>
+</form>
+</div>
+
+<!-- end get_pending_lists.tt2 -->

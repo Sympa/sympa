@@ -1,0 +1,120 @@
+<!-- $Id: nav.tt2 5675 2009-04-28 13:59:12Z david.verdin $ -->
+[% IF action == 'create_list_request' %]
+<div id="nav">
+  <ul>
+    <li class="MainMenuLinksCurrentPage"><a href="#">[%|loc%]Copy an existing list.[%END%]</a></li>
+    <li class="MainMenuLinksCurrentPage"><a href="#">[%|loc%]Create a list using a template[%END%]</a></li>
+  </ul>
+</div>
+[% END %]
+
+[% IF action == 'serveradmin' or action == 'skinsedit' or action == 'get_pending_lists'  or action == 'get_closed_lists'  or action == 'get_latest_lists'   or action == 'get_inactive_lists' %]
+<div id="nav">
+  <ul>
+[% IF (subaction == '' or subaction == 'm_lists') and action != 'skinsedit' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a href="[% path_cgi %]/serveradmin/m_lists">[%|loc%]Lists[%END%]</a></li>
+[% IF subaction == 'users' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a href="[% path_cgi %]/serveradmin/users">[%|loc%]Users[%END%]</a></li>
+[% IF subaction == 'archives' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a href="[% path_cgi %]/serveradmin/archives">[%|loc%]Archives[%END%]</a></li>
+[% IF subaction == 'logs' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a href="[% path_cgi %]/serveradmin/logs">[%|loc%]Logs[%END%]</a></li>
+[% IF subaction == 'templates' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a href="[% path_cgi %]/serveradmin/templates">[%|loc%]Templates[%END%]</a></li>
+[% IF action == 'skinsedit' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a href="[% path_cgi %]/skinsedit">[%|loc%]Skins, CSS and colors[%END%]</a></li>
+[% IF main_robot %]
+[% IF subaction == 'vhosts' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a href="[% path_cgi %]/serveradmin/vhosts">[%|loc%]Virtual Robots[%END%]</a></li>
+[% END %]
+[% IF families -%]
+[% IF subaction == 'families' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a href="[% path_cgi %]/serveradmin/families">[%|loc%]Families[%END%]</a></li>
+[% END %]
+[% IF subaction == 'translation' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a href="[% path_cgi %]/serveradmin/translation">[%|loc%]Translating Sympa[%END%]</a></li>
+[% IF subaction == 'tracker' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a href="[% path_cgi %]/serveradmin/tracker">[%|loc%]Submitting a bug, a feature request[%END%]</a></li>
+  </ul>
+</div>
+[% END %]
+
+[% IF action == 'lists' %]
+[% letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','others' ] %]
+<div id="nav">
+  <ul>
+[% FOREACH letter IN letters %]
+  [% IF orderedlist.$letter.0 %]
+    <li class="MainMenuLinks"><a href="#[%letter%]">[%letter%]</a></li>
+  [% ELSE %]
+    <li class="nolink">[%letter%]</li>
+ [% END %] 
+[% END %]
+ <li class="MainMenuLinks"><a href="[% path_cgi %]/lists" >All</a> </li>
+  </ul>
+</div>
+[% END %]
+
+[% IF action == 'admin' || action_type == 'admin' || action == 'editfile' %]
+<div id="nav">
+  <ul>
+[% IF action == 'edit_list_request' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a  href="[% path_cgi %]/edit_list_request/[% list %]">[%|loc%]Edit List Config[%END%]</a></li>
+[% IF is_owner %]
+[% IF action == 'editfile' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a  href="[% path_cgi %]/editfile/[% list %]">[%|loc%]Customizing[%END%]</a></li>
+[% IF action == 'review' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a  href="[% path_cgi %]/review/[% list %]">[%|loc%]Manage Subscribers[%END%]</a></li>
+[% END %]
+[% IF conf.use_blacklist != 'none' %]
+[% IF action == 'blacklist' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a  href="[% path_cgi %]/blacklist/[% list %]" >[%|loc%]Blacklist[%END%]</a></li>
+[% END %]
+[% IF is_archived %]
+[% IF action == 'arc_manage' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a  href="[% path_cgi %]/arc_manage/[% list %]">[%|loc%]Manage Archives[%END%]</a></li>
+[% END %]
+[% IF is_owner %]
+[% IF action == 'reviewbouncing' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a  href="[% path_cgi %]/reviewbouncing/[% list %]">[%|loc%]Bounces[%END%]</a></li>
+[% END %]
+[% IF is_priv || is_listmaster %]
+[% IF action == 'viewlogs' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a  href="[% path_cgi %]/viewlogs/[% list %]/first" >[%|loc%]Logs[%END%]</a></li>
+[% END %]
+
+  </ul>
+</div>
+
+[% IF action == 'edit_list_request' %]
+<div id="subnav">
+  <ul>
+[% IF group == 'description' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+     <li class=[% class %]><a  href="[% path_cgi %]/edit_list_request/[% list %]/description" >[%|loc%]List definition[%END%]</a></li>
+[% IF group == 'sending' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]     <li class="[% class %]"><a href="[% path_cgi %]/edit_list_request/[% list %]/sending" >[%|loc%]Sending/receiving setup[%END%]</a></li>
+[% IF group == 'command' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]     <li class="[% class %]"><a href="[% path_cgi %]/edit_list_request/[% list %]/command" >[%|loc%]Privileges[%END%]</a></li>
+[% IF group == 'archives' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+     <li class="[% class %]"><a href="[% path_cgi %]/edit_list_request/[% list %]/archives" >[%|loc%]Archives[%END%]</a></li>
+[% IF group == 'bounces' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+     <li class="[% class %]"><a href="[% path_cgi %]/edit_list_request/[% list %]/bounces" >[%|loc%]Bounces[%END%]</a></li>
+[% IF group == 'data_source' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+     <li class="[% class %]"><a href="[% path_cgi %]/edit_list_request/[% list %]/data_source" >[%|loc%]Data sources setup[%END%]</a></li>
+[% IF group == 'other' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+     <li class="[% class %]"><a href="[% path_cgi %]/edit_list_request/[% list %]/other" >[%|loc%]Miscellaneous[%END%]</a></li>
+  </ul>
+</div>
+[% END %]
+[% END %]
+
+[% IF action == 'compose_mail' %]
+<div id="nav">
+  <ul>
+    [% IF subaction == '' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a href="[% path_cgi %]/compose_mail/[% list %]">[%|loc%]Send a message[%END%]</a></li>
+    [% IF subaction == 'html_news_letter' %][% SET class = 'MainMenuLinksCurrentPage' %][% ELSE %][% SET class = 'MainMenuLinks' %][% END %]
+    <li class="[% class %]"><a href="[% path_cgi %]/compose_mail/[% list %]/html_news_letter">[%|loc%]Send an html page[%END%]</a></li>
+  </ul>
+</div>
+[% END %]
+
+<!-- end nav.tt2 -->

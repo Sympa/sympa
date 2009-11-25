@@ -1,0 +1,147 @@
+## Oracle Database creation script
+## Fabien Marquois <fmarquoi@univ-lr.fr>
+
+/Bases/oracle/product/7.3.4.1/bin/sqlplus loginsystem/passwdoracle <<-!
+ create user SYMPA identified by SYMPA default tablespace TABLESP
+temporary tablespace TEMP;
+ grant create session to SYMPA;
+ grant create table to SYMPA;
+ grant create synonym to SYMPA;
+ grant create view to SYMPA;
+ grant execute any procedure to SYMPA;
+ grant select any table to SYMPA;
+ grant select any sequence to SYMPA;
+ grant resource to SYMPA;
+!
+
+/Bases/oracle/product/7.3.4.1/bin/sqlplus SYMPA/SYMPA <<-!
+CREATE TABLE user_table (
+        email_user              varchar2(100) NOT NULL,
+        gecos_user              varchar2(150),
+        password_user           varchar2(40),
+	last_login_date_user	number,
+	last_login_host_user	varchar2(60),
+        cookie_delay_user       number,
+        lang_user               varchar2(10),
+	attributes_user		varchar2(500),
+	data_user	        varchar2(500),	
+        CONSTRAINT ind_user PRIMARY KEY (email_user)
+);
+CREATE TABLE subscriber_table (
+        list_subscriber         varchar2(50) NOT NULL,
+        user_subscriber         varchar2(100) NOT NULL,
+       	custom_attribute_subscriber varchar2(500),
+	robot_subscriber        varchar2(80) NOT NULL,
+        date_subscriber         date NOT NULL,
+	update_subscriber	date,
+        visibility_subscriber   varchar2(20),
+        reception_subscriber    varchar2(20),
+	topics_subscriber	varchar2(200),
+ 	bounce_subscriber       varchar2 (35),
+	bounce_score_subscriber number,
+	bounce_address_subscriber       varchar2 (100),
+ 	comment_subscriber      varchar2 (150),
+	subscribed_subscriber 	number NULL    constraint  cons_subscribed_subscriber CHECK (subscribed_subscriber in (0,1)),
+	included_subscriber 	number NULL    constraint  cons_included_subscriber CHECK (included_subscriber in (0,1)),
+	include_sources_subscriber varchar2(50),
+        CONSTRAINT ind_subscriber PRIMARY KEY (list_subscriber,user_subscriber,robot_subscriber)
+);
+CREATE TABLE admin_table (
+	list_admin 		varchar2(50) NOT NULL,
+ 	user_admin 		varchar2(100) NOT NULL,
+ 	robot_admin 		varchar2(80) NOT NULL,
+	role_admin 		varchar2(20) NOT NULL,
+	date_admin 		date NOT NULL,
+	update_admin 		date,
+	reception_admin 	varchar2(20),
+	visibility_admin 	varchar2(20),
+	comment_admin 		varchar2(150),
+	subscribed_admin  	number NULL    constraint  cons_subscribed_admin CHECK (subscribed_admin in (0,1)),
+	included_admin  	number NULL    constraint  cons_included_admin CHECK (included_admin in (0,1)),
+	include_sources_admin  	varchar2(50),
+	info_admin   		varchar2(150),
+	profile_admin  		varchar2(20),
+       CONSTRAINT ind_admin PRIMARY KEY (list_admin,user_admin,robot_admin,role_admin)
+);
+
+CREATE TABLE netidmap_table (
+        netid_netidmap              varchar2 (100) NOT NULL,
+	serviceid_netidmap	    varchar2 (100) NOT NULL,
+	robot_netidmap	            varchar2 (80) NOT NULL,
+        email_netidmap              varchar2 (100),
+        CONSTRAINT ind_netidmap PRIMARY KEY (netid_netidmap, serviceid_netidmap, robot_netidmap)
+);
+
+CREATE TABLE logs_table (
+	id_logs			number NOT NULL,
+	date_logs		number NOT NULL,
+	robot_logs		varchar2 (80),
+	list_logs		varchar2 (50),
+	action_logs		varchar2 (50) NOT NULL,
+	parameters_logs		varchar2 (100),
+	target_email_logs	varchar2 (100),
+	user_email_logs		varchar2 (100),
+	msg_id_logs		varchar2 (255),
+	status_logs		varchar2 (10) NOT NULL,
+	error_type_logs		varchar2 (150),
+	client_logs		varchar2 (100),
+	daemon_logs		varchar2 (10) NOT NULL,
+	CONSTRAINT ind_logs PRIMARY KEY (id_logs)
+);
+
+
+CREATE TABLE session_table (
+	id_session			number NOT NULL,
+	start_date_session		number NOT NULL,
+	date_session		        number NOT NULL,
+	remote_addr_session		varchar2(60),
+	robot_session		        varchar2(80),
+	email_session		        varchar2(100),
+	hit_session     	        number,
+	data_session		        varchar2(500),
+	CONSTRAINT ind_session PRIMARY KEY (id_session)
+);
+
+CREATE TABLE one_time_ticket_table (
+	ticket_one_time_ticket		varchar2(30),
+	robot_one_time_ticket		varchar2(80),
+	email_one_time_ticket		varchar2(100),
+	date_one_time_ticket		number,
+	data_one_time_ticket		varchar2(200),
+	remote_addr_one_time_ticket	varchar2(60),
+	status_one_time_ticket	varchar2(60),
+	CONSTRAINT ind_one_time_ticket PRIMARY KEY (ticket_one_time_ticket)
+);
+
+
+CREATE TABLE bulkmailer_table(
+  	messagekey_bulkmailer  	varchar2(80)) NOT NULL,
+	packetid_bulkmailer 	varchar2(33)) NOT NULL,
+	receipients_bulkmailer 	long,
+	returnpath_bulkmailer 	varchar2(100),
+	robot_bulkmailer 	varchar2(80),
+	listname_bulkmailer 	varchar2(50),
+	verp_bulkmailer 	number,
+	priority_message_bulkmailer 	number,
+	priority_packet_bulkmailer 	number,
+	reception_date_bulkmailer 	number,
+	delivery_date_bulkmailer 	number,
+	lock_bulkmailer 	varchar2(30),
+	CONSTRAINT ind_bulkmailer PRIMARY KEY (messagekey_bulkmailer, packetid_bulkmailer)
+);
+
+CREATE TABLE bulkspool_table (
+  	messagekey_bulkspool  	varchar2(33) NOT NULL,
+	message_bulkspool 	long,
+	lock_bulkspool 	number,
+	CONSTRAINT ind_bulkspool PRIMARY KEY (messagekey_bulkspool)
+);
+
+CREATE TABLE conf_table (
+  robot_conf varchar(80),
+  label_conf varchar(80),
+  value_conf varchar(300)
+  CONSTRAINT ind_conf primary key (robot_conf,label_conf)
+);
+
+!

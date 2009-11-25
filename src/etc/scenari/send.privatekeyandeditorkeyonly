@@ -1,0 +1,11 @@
+title.gettext Moderated, for subscribers and moderators
+
+is_subscriber([listname],[sender]) smtp            -> request_auth
+is_subscriber([listname],[sender]) md5,smime	   -> editorkey
+is_editor([listname],[sender])     smtp            -> request_auth
+is_editor([listname],[sender])	   md5,smime       -> do_it
+true()				   smtp,md5,smime  -> reject(reason='send_subscriber')
+
+
+
+

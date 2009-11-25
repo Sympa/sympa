@@ -1,0 +1,138 @@
+## MySQL Database creation script
+
+CREATE DATABASE sympa;
+
+## Connect to DB 
+\r sympa
+
+CREATE TABLE user_table (
+  	email_user          	varchar (100) NOT NULL,
+  	gecos_user          	varchar (150),
+  	password_user		varchar (40),
+	last_login_date_user	int(11),
+	last_login_host_user	varchar(60),
+	cookie_delay_user	int,
+	lang_user		varchar (10),
+	attributes_user		text,
+	data_user		text,
+	PRIMARY KEY (email_user)
+);
+
+CREATE TABLE subscriber_table (
+  	list_subscriber       	varchar (50) NOT NULL,
+	user_subscriber		varchar (100) NOT NULL,
+  	custom_attribute_subscriber	text,
+	robot_subscriber	varchar (80) NOT NULL,
+	date_subscriber		datetime NOT NULL,
+	update_subscriber	datetime,
+	visibility_subscriber	varchar (20),
+	reception_subscriber	varchar (20),
+	topics_subscriber	varchar (200),
+	bounce_subscriber	varchar (35),
+	bounce_score_subscriber smallint (6),
+	bounce_address_subscriber	varchar (100),
+	comment_subscriber	varchar (150),
+	subscribed_subscriber 	int(1),
+	included_subscriber 	int(1),
+	include_sources_subscriber varchar(50),
+	PRIMARY KEY (robot_subscriber, list_subscriber, user_subscriber),
+	INDEX user_index (user_subscriber)
+);
+
+CREATE TABLE admin_table (
+	list_admin 		varchar(50) NOT NULL,
+ 	user_admin 		varchar(100) NOT NULL,
+ 	robot_admin 		varchar(80) NOT NULL,
+	role_admin 		enum('listmaster','owner','editor') NOT NULL,
+	date_admin 		datetime NOT NULL,
+	update_admin 		datetime,
+	reception_admin 	varchar(20),
+	visibility_admin 	varchar(20),
+	comment_admin 		varchar(150),
+	subscribed_admin  	int(1),
+	included_admin  	int(1),
+	include_sources_admin  	varchar(50),
+	info_admin   		varchar(150),
+	profile_admin  		enum('privileged','normal'),
+	PRIMARY KEY (robot_admin, list_admin, role_admin, user_admin),
+	INDEX user_index (user_admin)
+);
+ 
+CREATE TABLE netidmap_table (
+        netid_netidmap              varchar (100) NOT NULL,
+	serviceid_netidmap		    varchar (100) NOT NULL,
+	robot_netidmap	            varchar (80) NOT NULL,
+        email_netidmap              varchar (100),
+        PRIMARY KEY (netid_netidmap, serviceid_netidmap, robot_netidmap)
+);
+
+CREATE TABLE logs_table (
+	id_logs			bigint(20) NOT NULL,
+	date_logs		int(11) NOT NULL,
+	robot_logs		varchar(80),
+	list_logs		varchar(50),
+	action_logs		varchar(50) NOT NULL,
+	parameters_logs		varchar(100),
+	target_email_logs	varchar(100),
+	user_email_logs		varchar(100),
+	msg_id_logs		varchar(255),
+	status_logs		varchar(10) NOT NULL,
+	error_type_logs		varchar(150),
+	client_logs		varchar(100),
+	daemon_logs		varchar(10) NOT NULL,
+	PRIMARY KEY (id_logs)					  
+);
+
+
+CREATE TABLE session_table (
+	id_session			varchar(30) NOT NULL,
+	start_date_session		int(11) NOT NULL,
+	date_session		        int(11) NOT NULL,
+	remote_addr_session		varchar(60),
+	robot_session		        varchar(80),
+	email_session		        varchar(100),
+	hit_session     	        int(11),
+	data_session		        text,
+	PRIMARY KEY (id_session)
+);
+
+CREATE TABLE one_time_ticket_table (
+	ticket_one_time_ticket		varchar(30),
+	robot_one_time_ticket		varchar(80),
+	email_one_time_ticket		varchar(100),
+	date_one_time_ticket		int(11),
+	data_one_time_ticket		varchar(200),
+	remote_addr_one_time_ticket	varchar(60),
+	status_one_time_ticket		varchar(60),
+	PRIMARY KEY (ticket_one_time_ticket)
+);
+
+CREATE TABLE bulkmailer_table (
+	messagekey_bulkmailer varchar(80) NOT NULL,
+	packetid_bulkmailer varchar(33) NOT NULL,
+	receipients_bulkmailer text NOT NULL,
+	returnpath_bulkmailer varchar(100) NOT NULL,
+	robot_bulkmailer varchar(80) NOT NULL,
+	listname_bulkmailer varchar(50) default NULL,
+	verp_bulkmailer int(1) NOT NULL,
+	priority_message_bulkmailer smallint(10) NOT NULL,
+	priority_packet_bulkmailer smallint(10) NOT NULL,
+	reception_date_bulkmailer int(11) NOT NULL,
+	delivery_date_bulkmailer int(11) NOT NULL,
+	lock_bulkmailer varchar(30) default NULL,
+	PRIMARY KEY (messagekey_bulkmailer,packetid_bulkmailer)
+);
+
+CREATE TABLE bulkspool_table (
+	messagekey_bulkspool varchar(33) NOT NULL,
+	message_bulkspool longtext NOT NULL,
+	lock_bulkspool int(1) NOT NULL,
+	PRIMARY KEY (messagekey_bulkspool)
+);
+
+CREATE TABLE conf_table (
+  robot_conf varchar(80) default NULL,
+  label_conf varchar(80) default NULL,
+  value_conf varchar(300) default NULL,
+  PRIMARY KEY (robot_conf,label_conf)
+);

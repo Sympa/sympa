@@ -1,0 +1,35 @@
+<!-- $Id: get_closed_lists.tt2 5682 2009-04-29 17:29:30Z david.verdin $ -->
+
+<div class="block">
+<form name="myform" action="[% path_cgi %]" method="post">
+<fieldset>
+<strong>[%|loc%]Closed lists[%END%]</strong>
+<table summary="[%|loc%]Closed lists[%END%]" class="table_style">
+ <tr class="color4">
+   <th><strong>X</strong></th>
+   <th><strong>[%|loc%]list name[%END%]</strong></th>
+   <th><strong>[%|loc%]list subject[%END%]</strong></th>
+   <th><strong>[%|loc%]Requested by[%END%]</strong></th>
+ </tr>
+
+[% FOREACH list = closed %]
+[% IF dark == '1' %]
+  <tr>[% SET dark = 0 %]
+[% ELSE %]
+  <tr class="color0">[% SET dark = 1 %]
+[% END %]
+
+<td><input type="checkbox" name="selected_lists" value="[% list.key %]" /></td>
+<td><a href="[% path_cgi %]/admin/[% list.key %]">[% list.key %]</a></td>
+<td>[% list.value.subject %]</td>
+<td>[% list.value.by %]</td>
+</tr>
+[% END %]
+</table>
+<input class="MainMenuLinks" type="button" value="[%|loc%]Toggle Selection[%END%]" onclick="toggle_selection(document.myform.selected_lists)" />
+<input class="MainMenuLinks" type="submit" name="action_purge_list" value="[%|loc%]Purge selected lists[%END%]" />
+</fieldset>
+</form>
+</div>
+
+<!-- end get_closed_lists.tt2 -->

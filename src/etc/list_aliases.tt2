@@ -1,0 +1,16 @@
+#------------------------------ [% list.name %]: list alias created [% date %]
+[% IF is_default_domain -%]
+[% list.name %]: "| /usr/local/sympa-unstable/bin/queue [% list.name %]@[% list.domain %]"
+[% list.name %]-request: "| /usr/local/sympa-unstable/bin/queue [% list.name %]-request@[% list.domain %]"
+[% list.name %]-editor: "| /usr/local/sympa-unstable/bin/queue [% list.name %]-editor@[% list.domain %]"
+#[% list.name %]-subscribe: "| /usr/local/sympa-unstable/bin/queue [% list.name %]-subscribe@[% list.domain %]"
+[% list.name %]-unsubscribe: "| /usr/local/sympa-unstable/bin/queue [% list.name %]-unsubscribe@[% list.domain %]"
+[% list.name %][% return_path_suffix %]: "| /usr/local/sympa-unstable/bin/bouncequeue [% list.name %]@[% list.domain %]"
+[% ELSE -%]
+[% list.domain %]-[% list.name %]: "| /usr/local/sympa-unstable/bin/queue [% list.name %]@[% list.domain %]"
+[% list.domain %]-[% list.name %]-request: "| /usr/local/sympa-unstable/bin/queue [% list.name %]-request@[% list.domain %]"
+[% list.domain %]-[% list.name %]-editor: "| /usr/local/sympa-unstable/bin/queue [% list.name %]-editor@[% list.domain %]"
+#[% list.domain %]-[% list.name %]-subscribe: "| /usr/local/sympa-unstable/bin/queue [% list.name %]-subscribe@[% list.domain %]"
+[% list.domain %]-[% list.name %]-unsubscribe: "| /usr/local/sympa-unstable/bin/queue [% list.name %]-unsubscribe@[% list.domain %]"
+[% list.domain %]-[% list.name %][% return_path_suffix %]: "| /usr/local/sympa-unstable/bin/bouncequeue [% list.name %]@[% list.domain %]"
+[% END -%]

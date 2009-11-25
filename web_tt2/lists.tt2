@@ -1,0 +1,75 @@
+<!-- $Id: lists.tt2 5956 2009-07-10 08:10:56Z lumineau $ -->
+
+[% letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','others' ] %]
+
+
+[% IF action == 'search_list' %]
+  [%|loc(occurrence)%]%1 occurrence(s) found[%END%]<br /><br />
+[% ELSIF action == 'search_user' %]
+  [%|loc(email)%]<strong>%1</strong> is subscribed to the following mailing lists[%END%]
+[% END %]
+
+[% IF which %]
+
+
+<div class="block">
+<div class="columns">
+
+[% FOREACH letter IN letters %]
+[% IF orderedlist.$letter.0 %]
+<a name="[% letter %]" />
+[% END %] 
+<div>
+ [% FOREACH listname IN  orderedlist.$letter %]
+<ul class="listenum" >
+
+ <li class="listenum">
+  [% IF which.$listname.admin %]<a class="actionMenuLinks" href="[% path_cgi %]/admin/[% listname %]" >[%|loc%]admin[%END%]</a>[% END %]
+  <a href="[% path_cgi %]/info/[% listname %]" ><strong>[% hidden_head %][% listname %][% hidden_at %][% which.$listname.host %][% hidden_end %]</strong></a><br />
+ </li>
+
+</ul>
+<p class="listenum" >[% which.$listname.subject %]</p>
+
+ [% IF which.$listname.admin %]
+<div style="margin:0 0 2.5em 1.5em">
+  <div class="admin_cmd"><a  href="[% path_cgi %]/edit_list_request/[% listname %]">[%|loc%]Edit List Config[%END%]</a></div>
+  <div class="admin_cmd"><a  href="[% path_cgi %]/editfile/[% listname %]">[%|loc%]Customizing[%END%]</a></div>
+  <div class="admin_cmd"><a  href="[% path_cgi %]/review/[% listname %]">[%|loc%]Manage Subscribers[%END%]</a></div>
+  [% IF conf.use_blacklist != 'none' %]
+  <div class="admin_cmd"><a  href="[% path_cgi %]/blacklist/[% listname %]" >[%|loc%]Blacklist[%END%]</a></div>
+  [% END %]
+  <div class="admin_cmd"><a  href="[% path_cgi %]/reviewbouncing/[% listname %]">[%|loc%]Bounces[%END%]</a></div>
+  [% IF is_priv || is_listmaster %]
+  <div class="admin_cmd"><a  href="[% path_cgi %]/viewlogs/[% listname %]/first" >[%|loc%]Logs[%END%]</a></div>
+  [% END %]
+<br />
+</div>
+ [% END %]
+[% END %]
+
+</div>
+
+ [% END %] 
+
+
+
+
+ <br />
+
+ [% IF action == 'which' %]
+  [% IF ! which %]
+   &nbsp;&nbsp;<span class="color_dark">[%|loc(user.email)%]No subscriptions with address <strong>%1</strong>![%END%]</span>
+   <br />
+  [% END %]
+
+ [% END %]
+[% ELSE %]
+<p>[%|loc%]No mailing list available.[%END%]</p>
+[% END %]
+
+</div>
+
+</div>
+
+<!-- end lists.tt2 -->
